@@ -19,11 +19,14 @@
 package org.openurp.edu.la.web
 
 import org.beangle.cdi.bind.BindModule
-import org.openurp.edu.la.web.action.CorporationAction
+import org.openurp.edu.la.web.action.admin.CorporationAction
+import org.openurp.edu.la.web.action.admin.OptionAction
+import org.openurp.edu.la.web.action.admin.SessionAction
+import org.openurp.edu.la.model.Volunteer
 
 class DefaultModule extends BindModule {
 
   protected override def binding() {
-    bind(classOf[CorporationAction])
+    bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[Volunteer])
   }
 }

@@ -29,7 +29,8 @@ class DefaultMapping extends MappingModule {
 
     bind[Corporation]
     
-    bind[LaOption]
+    bind[LaOption].on(e => declare(
+      e.volunteers is depends("option")))
 
     bind[LaSession]
 

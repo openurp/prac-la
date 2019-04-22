@@ -1,4 +1,4 @@
-package org.openurp.edu.la.web.action
+package org.openurp.edu.la.web.action.admin
 
 import org.beangle.webmvc.api.action.ActionSupport
 import org.beangle.webmvc.entity.action.EntityAction
