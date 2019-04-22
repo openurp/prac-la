@@ -4,23 +4,23 @@
   <parent>
     <groupId>org.openurp</groupId>
     <artifactId>openurp-parent</artifactId>
-    <version>0.2.28</version>
+    <version>0.2.32</version>
   </parent>
   <groupId>org.openurp.edu.la</groupId>
-  <artifactId>openurp-edu-la-web-parent</artifactId>
+  <artifactId>openurp-edu-la-parent</artifactId>
   <version>0.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>OpenURP Edu La Web Parent</name>
+  <name>OpenURP Edu La Parent</name>
 
   <modules>
     <module>core</module>
-    <module>adminapp</module>
-    <module>studentapp</module>
+    <module>webapp</module>
   </modules>
 
   <properties>
-    <openurp.app.version>0.1.12</openurp.app.version>
-    <openurp.api.version>0.8.1</openurp.api.version>
+    <openurp.app.version>0.1.15</openurp.app.version>
+    <openurp.api.version>0.9.4</openurp.api.version>
+    <openurp.edu.boot.version>0.0.3</openurp.edu.boot.version>
   </properties>
 
 </project>

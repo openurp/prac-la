@@ -16,24 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.model
+package org.openurp.edu.la.web
 
-import org.beangle.data.orm.IdGenerator
-import org.beangle.data.orm.MappingModule
+import org.beangle.cdi.bind.BindModule
+import org.openurp.edu.la.web.action.CorporationAction
 
-class DefaultMapping extends MappingModule {
+class DefaultModule extends BindModule {
 
-  def binding(): Unit = {
-    defaultIdGenerator(IdGenerator.AutoIncrement)
-    defaultCache("openurp.la", "read-write")
-
-    bind[Corporation]
-    
-    bind[LaOption]
-
-    bind[LaSession]
-
-    bind[Volunteer]
-
+  protected override def binding() {
+    bind(classOf[CorporationAction])
   }
 }
