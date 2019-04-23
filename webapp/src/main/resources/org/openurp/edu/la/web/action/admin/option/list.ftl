@@ -12,7 +12,7 @@
     [@b.col width="35%" property="benefits" title="要求"/]
     [@b.col width="35%" property="request" title="福利条件"/]
     [@b.col width="7%" property="capacity" title="人数上限"/]
-    [@b.col width="7%" property="actual" title="实际人数"/]
+    [@b.col width="7%" property="actual" title="实际人数"][@b.a href="!volunteers?id=${laOption.id}"]${laOption.actual}[/@][/@]
   [/@]
 [/@]
 [@b.foot/]

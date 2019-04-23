@@ -10,9 +10,11 @@ import org.openurp.edu.base.model.Student
 class Volunteer extends LongId with Updated {
 
   var std: Student = _
-  
+
   var indexno: Int = _
 
   var option: LaOption = _
+
+  var adjust: Boolean = true
 
 }

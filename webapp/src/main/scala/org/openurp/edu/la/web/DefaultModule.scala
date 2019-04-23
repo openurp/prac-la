@@ -23,10 +23,11 @@ import org.openurp.edu.la.web.action.admin.CorporationAction
 import org.openurp.edu.la.web.action.admin.OptionAction
 import org.openurp.edu.la.web.action.admin.SessionAction
 import org.openurp.edu.la.model.Volunteer
+import org.openurp.edu.la.web.action.student.VolunteerAction
 
 class DefaultModule extends BindModule {
 
   protected override def binding() {
-    bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[Volunteer])
+    bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[VolunteerAction])
   }
 }

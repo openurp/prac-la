@@ -11,8 +11,9 @@ import org.openurp.edu.base.model.Project
 import org.openurp.edu.base.model.Semester
 import org.openurp.edu.la.model.Corporation
 import org.openurp.edu.la.model.LaOption
+import org.openurp.edu.boot.web.ProjectSupport
 
-class OptionAction extends RestfulAction[LaOption] {
+class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
     put("semesters", entityDao.getAll(classOf[Semester]))
@@ -66,9 +67,7 @@ class OptionAction extends RestfulAction[LaOption] {
   }
 
   override protected def saveAndRedirect(option: LaOption): View = {
-    val projectId = get("project").get.toInt
-    val project = entityDao.get(classOf[Project], projectId)
-    option.project = project
+    option.project = getProject()
     val corporationId = longId("laOption.corporation")
     val corporation = entityDao.get(classOf[Corporation], corporationId)
     if (get("option.request").isEmpty) {
@@ -79,6 +78,14 @@ class OptionAction extends RestfulAction[LaOption] {
     }
     option.actual = option.volunteers.size
     super.saveAndRedirect(option)
+  }
+
+  def volunteers(): View = {
+    val optionId = longId("laOption")
+    val option = entityDao.get(classOf[LaOption], optionId)
+    put("option", option)
+    put("volunteers", option.volunteers)
+    forward()
   }
 
 }
