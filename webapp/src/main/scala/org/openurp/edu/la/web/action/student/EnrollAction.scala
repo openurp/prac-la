@@ -15,7 +15,7 @@ import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.api.annotation.mapping
 import org.openurp.edu.boot.web.ProjectSupport
 
-class VolunteerAction extends RestfulAction[Volunteer] with ProjectSupport {
+class EnrollAction extends RestfulAction[Volunteer] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
     val user = Securities.user
