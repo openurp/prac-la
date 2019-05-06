@@ -1,3 +1,21 @@
+/*
+ * OpenURP, Agile University Resource Planning Solution.
+ *
+ * Copyright © 2014, The OpenURP Software.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful.
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openurp.edu.la.web.action.admin
 
 import java.time.LocalDate
@@ -23,7 +41,14 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   override protected def editSetting(entity: LaOption): Unit = {
     put("semesters", entityDao.getAll(classOf[Semester]))
-    put("currentSemester", getCurSemester())
+    val semester = getCurSemester()
+    put("currentSemester", semester)
+    val coQuery =
+      OqlBuilder.from(classOf[Corporation], "co")
+        .where("not exists(from " + classOf[LaOption].getName +
+          " lo where lo.corporation=co and lo.semester=:semester)", semester)
+    coQuery.orderBy("co.name")
+    put("corporations", entityDao.search(coQuery))
     super.editSetting(entity)
   }
 
@@ -67,16 +92,10 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   }
 
   override protected def saveAndRedirect(option: LaOption): View = {
-    option.project = getProject()
+    option.project = getProject
     val corporationId = longId("laOption.corporation")
     val corporation = entityDao.get(classOf[Corporation], corporationId)
-    if (get("option.request").isEmpty) {
-      option.request = corporation.request
-    }
-    if (get("option.benefits").isEmpty) {
-      option.benefits = corporation.benefits
-    }
-    option.actual = option.volunteers.size
+    option.actual = option.takers.size
     super.saveAndRedirect(option)
   }
 
@@ -84,7 +103,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     val optionId = longId("laOption")
     val option = entityDao.get(classOf[LaOption], optionId)
     put("option", option)
-    put("volunteers", option.volunteers)
+    put("takers", option.takers)
     forward()
   }
 

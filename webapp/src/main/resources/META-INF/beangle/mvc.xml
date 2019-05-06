@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <mvc>
   <profile name="openurp-edu-la-webapp" package="org.openurp.edu.la.web.action">
-    <url path="/{project}" suffix=""  style="seo" />
+    <url path="/" suffix=""  style="seo" />
     <interceptors>
       <interceptor name="web.Interceptor.hibernate"/>
       <interceptor name="web.Interceptor.security"/>

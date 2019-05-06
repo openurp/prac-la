@@ -1,6 +1,6 @@
 [#ftl]
 [@b.head/]
-[@b.toolbar title="企业"/]
+[@b.toolbar title="单位基本信息管理"/]
 <table class="indexpanel">
   <tr>
     <td class="index_view" >

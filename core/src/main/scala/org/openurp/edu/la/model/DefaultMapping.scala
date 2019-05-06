@@ -18,8 +18,7 @@
  */
 package org.openurp.edu.la.model
 
-import org.beangle.data.orm.IdGenerator
-import org.beangle.data.orm.MappingModule
+import org.beangle.data.orm.{ IdGenerator, MappingModule }
 
 class DefaultMapping extends MappingModule {
 
@@ -28,13 +27,16 @@ class DefaultMapping extends MappingModule {
     defaultCache("openurp.la", "read-write")
 
     bind[Corporation]
-    
+
     bind[LaOption].on(e => declare(
-      e.volunteers is depends("option")))
+      e.takers is one2many("option")))
 
     bind[LaSession]
 
-    bind[Volunteer]
+    bind[Volunteer].on(e => declare(
+      e.takers is depends("volunteer")))
+
+    bind[LaTaker]
 
   }
 }
