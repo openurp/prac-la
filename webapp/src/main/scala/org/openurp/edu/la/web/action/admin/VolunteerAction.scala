@@ -27,8 +27,9 @@ import org.beangle.data.dao.OqlBuilder
 import org.openurp.edu.base.model.Project
 import org.openurp.edu.base.model.Semester
 import java.time.LocalDate
+import org.openurp.edu.la.model.LaTaker
 
-class VolunteerAction extends RestfulAction[Volunteer] with ProjectSupport {
+class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
     put("projects", entityDao.getAll(classOf[Project]))

@@ -31,4 +31,5 @@ class LaSession extends LongId with Named with InstantRange {
   var semester: Semester = _
   var grades: String = _
   var minGpa: Float = _
+  var noticeUrl: Option[String] = None
 }

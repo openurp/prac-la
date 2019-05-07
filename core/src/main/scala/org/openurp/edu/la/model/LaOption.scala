@@ -32,11 +32,19 @@ class LaOption extends LongId with Remark {
   var semester: Semester = _
   var corporation: Corporation = _
   var requirement: Option[String] = None
-  /**拟录取*/
+
+  /**实际录取*/
   var enrolled: Int = _
-  /**人数上限*/
+
+  /**拟录取*/
+  var enrollLimit: Int = _
+
+  /**报名人数上限*/
   var capacity: Int = _
+
+  /**实际报名人数*/
   var actual: Int = _
 
+  /**报名列表*/
   var takers: Buffer[LaTaker] = Collections.newBuffer[LaTaker]
 }

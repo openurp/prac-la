@@ -1,27 +1,31 @@
 [#ftl]
 [@b.head/]
-[#if sessions ?? && sessions?size>0]
-[#if volunteers?? && volunteers?size>0]
-  [@b.toolbar title="已报名单位信息"/]
-  [@b.grid items=volunteers?sort_by("indexno") var="volunteer" sortable="false"]
-    [@b.row]
-      [@b.col width="5%" property="indexno" title="志愿顺序"/]
-      [@b.col width="15%" property="option.corporation.name" title="单位名称"/]
-      [@b.col width="30%" property="option.benefits" title="要求"/]
-      [@b.col width="30%" property="option.request" title="福利条件"/]
-      [@b.col width="5%" property="option.capacity" title="人数上限"/]
-      [@b.col width="5%" property="option.actual" title="实际人数"/]
-      [@b.col width="10%" title="操作"]
-        [@b.a href="!unChoose?volunteer.id=${volunteer.id}&session.id=${session.id }"]取消报名[/@]
-        [#if volunteers?size == 2]
-          [@b.a href="!changeNo?session.id=${session.id }"]更改顺序[/@]
-        [/#if]
-      [/@]
-    [/@]
-  [/@]
-[/#if]
+[@b.toolbar title="法律助理报名"]bar.addBack();[/@]
+[@b.messages/]
 
-<div class="container">法律助理报名时间为${session.beginAt}到${session.endAt }.[@b.a class="btn btn-default" href="!options" role="button"]报名[/@]</div>
-[#else]法律助理报名还未开始
+[#if sessions??&&sessions?size==1]
+[#assign session=sessions?first]
+<div class="container">
+<div class="jumbotron">
+  <h2>法律助理报名开始了<span style="font-size:0.5em">(${session.beginAt?string("MM-dd HH:mm")}~${session.endAt?string("MM-dd HH:mm")})</span></h2>
+  <p>
+ 为充分利用行业优质教育资源，为学生创造并提供丰富的专业实践锻炼机会，提高学生的法学实践与创新能力，现启动上海市高级人民法院与我校联合举办的本科生法律助理项目的${session.semester.beginOn?string('YYYY')}报名工作 。
+  </p>
+  <p>
+  [#if session.noticeUrl??]
+  <a href="${session.noticeUrl}" class="btn btn-primary btn-lg" target="_new">查看完整通知</a>
+  [/#if]
+  [#if volunteers?size>0]
+  [#list volunteers as v]
+  [@b.a class="btn btn-primary btn-lg" href="!signup?volunteer.id="+v.id+"&session.id="+session.id role="button"]进入我的报名[/@]
+  [/#list]
+  [#else]
+  [@b.a class="btn btn-primary btn-lg" href="!signup?session.id="+session.id role="button"]我要报名[/@]
+  [/#if]
+  </p>
+</div>
+</div>
+[#else]
+   不在立项时间。
 [/#if]
 [@b.foot/]

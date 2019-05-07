@@ -15,6 +15,7 @@
       start=(laSession.beginAt)! end=(laSession.endAt)! format="yyyy-MM-dd HH:mm" style="width:200px"/]
     [@b.textfield name="laSession.grades" label="可选年级" value="${laSession.grades!}" maxlength="200" style="width:200px;"  required="true" /]
     [@b.textfield name="laSession.minGpa" label="最低平均绩点" value="${laSession.minGpa!}" maxlength="20" style="width:40px;"  required="true" /]
+    [@b.textfield name="laSession.noticeUrl" label="通知URL" value="${laSession.noticeUrl!}" maxlength="200" style="width:300px;"  required="true" /]
     [@b.formfoot]
       [@b.reset/]&nbsp;&nbsp;[@b.submit value="action.submit"/]
     [/@]

@@ -31,6 +31,10 @@ import scala.collection.mutable.Buffer
   */
 class Volunteer extends LongId with Updated {
 
+  def this(std: Student) {
+    this()
+    this.std = std
+  }
   /**学生*/
   var std: Student = _
 
@@ -40,14 +44,14 @@ class Volunteer extends LongId with Updated {
   /**是否可调剂*/
   var adjustable: Boolean = _
 
-  /**录入志愿*/
+  /**录取志愿*/
   var enrolledRank: Option[Int] = None
 
   /**手机*/
   var mobile: String = _
 
   /**录取单位*/
-  var enrolledOption: LaOption = _
+  var enrolledOption: Option[LaOption] = None
 
   /**是否调剂录取*/
   var adjustEnrolled: Boolean = _
@@ -57,4 +61,8 @@ class Volunteer extends LongId with Updated {
 
   /**绩点*/
   var gpa: Float = _
+
+  def getTaker(rank: Number): Option[LaTaker] = {
+    takers.find(_.rank == rank.intValue)
+  }
 }

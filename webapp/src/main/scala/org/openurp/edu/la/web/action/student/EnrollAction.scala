@@ -18,30 +18,37 @@
  */
 package org.openurp.edu.la.web.action.student
 
-import java.time.{ Instant, LocalDate }
+import java.time.{Instant, LocalDate}
 
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.security.Securities
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.edu.base.model.{ Semester, Student }
+import org.openurp.edu.base.model.{Semester, Student}
 import org.openurp.edu.boot.web.ProjectSupport
-import org.openurp.edu.la.model.{ LaOption, LaSession, LaTaker, Volunteer }
+import org.openurp.edu.la.model.{LaOption, LaSession, LaTaker, Volunteer}
 import org.openurp.edu.base.model.Project
+import org.beangle.data.model.Entity
+import org.beangle.commons.collection.Collections
+import javax.sql.DataSource
+import org.beangle.data.jdbc.query.JdbcExecutor
 
 class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
 
+  var eamsDataSource: DataSource = _
+
   override protected def indexSetting(): Unit = {
+    val project = getProject
     val user = Securities.user
     val stdBuilder = OqlBuilder.from(classOf[Student], "student")
     stdBuilder.where("student.user.code =:code ", user)
-    val students = entityDao.search(stdBuilder)
+    stdBuilder.where("student.project =:project ", project)
 
-    val project = getProject
+    val student = entityDao.search(stdBuilder).head
+
     val volunteerBuilder = OqlBuilder.from(classOf[Volunteer], "volunteer")
-    volunteerBuilder.where("volunteer.std=:std", students(0))
-    volunteerBuilder.where("volunteer.option.project=:project", project)
-    volunteerBuilder.where("volunteer.option.semester=:semester", getCurSemester())
+    volunteerBuilder.where("volunteer.std=:std", student)
+    volunteerBuilder.where("volunteer.semester=:semester", getCurSemester())
     val volunteers = entityDao.search(volunteerBuilder)
     put("volunteers", volunteers)
 
@@ -50,12 +57,8 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     sessionBuilder.where("session.semester=:semester", getCurSemester())
     sessionBuilder.where("session.beginAt<:now and session.endAt>:now", Instant.now())
     val sessions = entityDao.search(sessionBuilder)
-    sessions.foreach(session => {
-      if (session.grades.contains(students(0).state.get.grade)) {
-        put("sessions", sessions)
-      }
-      put("session", session)
-    })
+      .filter { s => s.grades.contains(student.state.get.grade) }
+    put("sessions", sessions)
   }
 
   def getCurSemester(): Semester = {
@@ -65,58 +68,50 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     semesters(0)
   }
 
-  def options(): View = {
-    val user = Securities.user
-    val stdBuilder = OqlBuilder.from(classOf[Student], "student")
-    stdBuilder.where("student.user.code =:code ", user)
-    val students = entityDao.search(stdBuilder)
-
+  def signup(): View = {
+    val student = getStudent
+    val session = entityDao.find(classOf[LaSession], longId("session")).get
     val project = getProject
-    val sessionBuilder = OqlBuilder.from(classOf[LaSession], "session")
-    sessionBuilder.where("session.project=:project", project)
-    sessionBuilder.where("session.semester=:semester", getCurSemester())
-    sessionBuilder.where("session.beginAt<:now and session.endAt>:now", Instant.now())
-    val sessions = entityDao.search(sessionBuilder)
-    sessions.foreach(session => {
-      if (session.grades.contains(students(0).state.get.grade)) {
-        put("session", session)
-        val takers = getTakers(students(0), project, session)
-        val chooseOptions = takers.map(_.option)
-        put("chooseOptions", chooseOptions)
-      }
-    })
+    val volunteer = getVolunteer(student, session)
+
+    val gpa: Option[Number] = new JdbcExecutor(eamsDataSource)
+      .unique("select gpa from eams.CJ_JDTJ_T where XSID=?", student.id)
+
+    volunteer.gpa = gpa.map(_.floatValue).getOrElse(0)
+    if (java.lang.Float.compare(volunteer.gpa, session.minGpa) < 0) {
+      put("gpa", volunteer.gpa)
+      put("session", session)
+      return forward("lowgpa")
+    }
+    val takers = getTakers(student, project, session)
+    val chooseOptions = takers.map(_.option)
+    put("chooseOptions", chooseOptions)
 
     val optionBuilder = OqlBuilder.from(classOf[LaOption], "option")
     optionBuilder.where("option.project=:project", project)
     optionBuilder.where("option.semester=:semester", getCurSemester())
+    optionBuilder.where("option.enrolled < option.enrollLimit and option.actual < option.capacity")
+
     put("options", entityDao.search(optionBuilder))
+    put("student", student)
+    put("session", session)
+    put("volunteer", volunteer)
     forward()
   }
 
   private def getVolunteer(std: Student, session: LaSession): Volunteer = {
-    val builder = OqlBuilder.from(classOf[Volunteer], "taker")
-    builder.where("volunteer.std=:std", std)
-    builder.where("Volunteer.updatedAt>:beginAt and Volunteer.updatedAt<:endAt", session.beginAt, session.endAt)
-    val rs = entityDao.search(builder)
-
-    val volunteer =
-      if (rs.isEmpty) {
-        val v = new Volunteer()
-        v.std = std
-        v.updatedAt = Instant.now
-        v
-      } else {
-        rs.head
+    val volunteer = populateEntity(classOf[Volunteer], "volunteer")
+    if (null == volunteer.std) {
+      volunteer.std = std
+      volunteer.semester = session.semester
+    } else {
+      if (volunteer.std != std) {
+        throw new RuntimeException("Cannot recognize volunteer id:" + volunteer.id + " for user " + std.user.code)
       }
-
-    get("adjust").foreach(adjust => {
-      adjust match {
-        case "是" => volunteer.adjustable = true
-        case "否" => volunteer.adjustable = false
-      }
-    })
-
-    entityDao.saveOrUpdate(volunteer)
+    }
+    if (null == volunteer.updatedAt) {
+      volunteer.updatedAt = Instant.now
+    }
     volunteer
   }
 
@@ -130,48 +125,66 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
   }
 
   protected def choose(): View = {
-    val user = Securities.user
-    val stdBuilder = OqlBuilder.from(classOf[Student], "student")
-    stdBuilder.where("student.user.code =:code ", user)
-    val students = entityDao.search(stdBuilder)
-
-    val option = entityDao.find(classOf[LaOption], longId("option")).get
+    val student = getStudent
     val session = entityDao.find(classOf[LaSession], longId("session")).get
-    val volunteer = this.getVolunteer(students(0), session)
-
+    val volunteer = getVolunteer(student, session)
     val project = getProject
-    val takers = getTakers(students(0), project, session)
+    val saved = Collections.newBuffer[Entity[_]]
+    saved += volunteer
 
-    if (option.actual < option.capacity) {
-      takers.size match {
-        case 0 => {
-          val taker = populateEntity()
-          taker.rank = 1
-          taker.option = option
-          taker.updatedAt = Instant.now()
-          taker.volunteer = volunteer
-          taker.option.actual = taker.option.takers.size + 1
-          entityDao.saveOrUpdate(taker.option)
-          entityDao.saveOrUpdate(taker)
-          redirect("index", "第一志愿报名成功")
-        }
-        case 1 => {
-          val taker = populateEntity()
-          taker.rank = 2
-          taker.option = option
-          taker.volunteer = volunteer
-          taker.updatedAt = Instant.now()
-          taker.option.actual = taker.option.takers.size + 1
-          entityDao.saveOrUpdate(taker.option)
-          entityDao.saveOrUpdate(volunteer)
-          redirect("index", "第二志愿报名成功")
-        }
-        case 2 => {
-          redirect("index", "两个志愿已满，报名失败")
-        }
+    var selected = 0
+    var firstSuccess = false
+    (1 to 2) foreach { rank =>
+      get("option" + rank, classOf[Long]) match {
+        case Some(id) =>
+          selected += 1
+          if (rank == 1 || firstSuccess) {
+            val option = entityDao.get(classOf[LaOption], id)
+            if (option.actual < option.capacity) {
+              volunteer.getTaker(rank) match {
+                case Some(t) =>
+                  if (t.option != option) {
+                    t.option.actual -= 1
+                    t.option.takers -= t
+                    saved += t.option
+                    t.option = option
+                    option.actual += 1
+                    option.takers += t
+                  }
+                  t
+                case None =>
+                  val nt = new LaTaker(volunteer, rank, option)
+                  volunteer.takers += nt
+                  option.actual += 1
+                  option.takers += nt
+                  nt
+              }
+              saved += option
+            }
+            if (rank == 1) {
+              firstSuccess = volunteer.getTaker(1).isDefined
+            }
+          }
+        case None =>
+          volunteer.getTaker(rank) foreach { taker =>
+            volunteer.takers -= taker
+            taker.option.actual -= 1
+            taker.option.takers -= taker
+            saved += taker.option
+          }
       }
+    }
+
+    if (selected == volunteer.takers.size) {
+      entityDao.saveOrUpdate(saved)
+      redirect("index", "报名成功")
     } else {
-      redirect("index", "所选项目单位报名人数已满，报名失败")
+      if (volunteer.takers.size > 0) {
+        entityDao.saveOrUpdate(saved)
+        redirect("index", "第一志愿报名成功，第二志愿人数已满!")
+      } else {
+        redirect("index", "两个志愿人数已满!")
+      }
     }
   }
 

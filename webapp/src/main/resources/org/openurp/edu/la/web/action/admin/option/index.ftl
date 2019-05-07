@@ -1,6 +1,6 @@
 [#ftl]
 [@b.head/]
-[@b.toolbar title="项目单位"/]
+[@b.toolbar title="参选单位"/]
 <table class="indexpanel">
   <tr>
     <td class="index_view" >

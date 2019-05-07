@@ -49,7 +49,6 @@ class SessionAction extends RestfulAction[LaSession] with ProjectSupport {
     semesters(0)
   }
 
-
   override protected def saveAndRedirect(session: LaSession): View = {
     session.project = getProject
     super.saveAndRedirect(session)

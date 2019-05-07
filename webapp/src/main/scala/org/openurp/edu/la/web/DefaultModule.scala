@@ -24,11 +24,14 @@ import org.openurp.edu.la.web.action.admin.VolunteerAction
 import org.openurp.edu.la.web.action.admin.SessionAction
 import org.openurp.edu.la.web.action.admin.OptionAction
 import org.openurp.edu.la.web.action.admin.CorporationAction
+import org.openurp.app.datasource.AppDataSourceFactory
 
 class DefaultModule extends BindModule {
 
   protected override def binding() {
     bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[VolunteerAction])
     bind(classOf[EnrollAction])
+
+    bind("eamsDataSource",classOf[AppDataSourceFactory]).property("name", "eams")
   }
 }
