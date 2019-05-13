@@ -17,15 +17,29 @@
   [/#if]
   [#if volunteers?size>0]
   [#list volunteers as v]
-  [@b.a class="btn btn-primary btn-lg" href="!signup?volunteer.id="+v.id+"&session.id="+session.id role="button"]进入我的报名[/@]
+  [@b.a class="btn btn-primary btn-lg btn-success" href="!signup?volunteer.id="+v.id+"&session.id="+session.id role="button"]修改报名[/@]
+  [@b.a class="btn btn-primary btn-lg btn-danger" href="!cancel?volunteer.id="+v.id+"&session.id="+session.id role="button"  onclick="return cancel(this)"]取消报名[/@]
   [/#list]
   [#else]
   [@b.a class="btn btn-primary btn-lg" href="!signup?session.id="+session.id role="button"]我要报名[/@]
   [/#if]
+  <script>
+    function cancel(e){
+      if(confirm('确定取消?')){
+        return bg.Go(e,null);
+      }else{
+        return false;
+      }
+    }
+  </script>
   </p>
 </div>
 </div>
 [#else]
-   不在立项时间。
+  [#if volunteers?size>0]
+  [#include "volunteer_info.ftl"/]
+  [#else]
+   不在报名时间。
+  [/#if]
 [/#if]
 [@b.foot/]

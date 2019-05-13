@@ -32,7 +32,6 @@ import org.openurp.edu.la.model.LaTaker
 class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
-    put("projects", entityDao.getAll(classOf[Project]))
     put("semesters", entityDao.getAll(classOf[Semester]))
     put("currentSemester", getCurSemester())
     super.indexSetting()

@@ -41,9 +41,6 @@ class Volunteer extends LongId with Updated {
   /**学年学期*/
   var semester: Semester = _
 
-  /**是否可调剂*/
-  var adjustable: Boolean = _
-
   /**录取志愿*/
   var enrolledRank: Option[Int] = None
 
@@ -52,9 +49,6 @@ class Volunteer extends LongId with Updated {
 
   /**录取单位*/
   var enrolledOption: Option[LaOption] = None
-
-  /**是否调剂录取*/
-  var adjustEnrolled: Boolean = _
 
   /**报名记录*/
   var takers: Buffer[LaTaker] = Collections.newBuffer[LaTaker]

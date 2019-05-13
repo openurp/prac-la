@@ -90,7 +90,7 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     val optionBuilder = OqlBuilder.from(classOf[LaOption], "option")
     optionBuilder.where("option.project=:project", project)
     optionBuilder.where("option.semester=:semester", getCurSemester())
-    optionBuilder.where("option.enrolled < option.enrollLimit and option.actual < option.capacity")
+    optionBuilder.where("size(option.volunteers) < option.capacity")
 
     put("options", entityDao.search(optionBuilder))
     put("student", student)
@@ -128,119 +128,55 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     val student = getStudent
     val session = entityDao.find(classOf[LaSession], longId("session")).get
     val volunteer = getVolunteer(student, session)
+    volunteer.updatedAt = Instant.now
     val project = getProject
     val saved = Collections.newBuffer[Entity[_]]
     saved += volunteer
 
-    var selected = 0
-    var firstSuccess = false
     (1 to 2) foreach { rank =>
       get("option" + rank, classOf[Long]) match {
         case Some(id) =>
-          selected += 1
-          if (rank == 1 || firstSuccess) {
-            val option = entityDao.get(classOf[LaOption], id)
-            if (option.actual < option.capacity) {
-              volunteer.getTaker(rank) match {
-                case Some(t) =>
-                  if (t.option != option) {
-                    t.option.actual -= 1
-                    t.option.takers -= t
-                    saved += t.option
-                    t.option = option
-                    option.actual += 1
-                    option.takers += t
-                  }
-                  t
-                case None =>
-                  val nt = new LaTaker(volunteer, rank, option)
-                  volunteer.takers += nt
-                  option.actual += 1
-                  option.takers += nt
-                  nt
+          val option = entityDao.get(classOf[LaOption], id)
+          volunteer.getTaker(rank) match {
+            case Some(t) =>
+              if (t.option != option) {
+                t.option.takers -= t
+                saved += t.option
+                t.option = option
+                option.takers += t
               }
-              saved += option
-            }
-            if (rank == 1) {
-              firstSuccess = volunteer.getTaker(1).isDefined
-            }
+              t.updatedAt = Instant.now
+            case None =>
+              val nt = new LaTaker(volunteer, rank, option)
+              volunteer.takers += nt
+              option.takers += nt
           }
+          saved += option
         case None =>
           volunteer.getTaker(rank) foreach { taker =>
             volunteer.takers -= taker
-            taker.option.actual -= 1
             taker.option.takers -= taker
             saved += taker.option
           }
       }
     }
 
-    if (selected == volunteer.takers.size) {
-      entityDao.saveOrUpdate(saved)
-      redirect("index", "报名成功")
-    } else {
-      if (volunteer.takers.size > 0) {
-        entityDao.saveOrUpdate(saved)
-        redirect("index", "第一志愿报名成功，第二志愿人数已满!")
-      } else {
-        redirect("index", "两个志愿人数已满!")
-      }
-    }
+    entityDao.saveOrUpdate(saved)
+    redirect("index", "报名成功")
   }
 
-  protected def unChoose(): View = {
-    val user = Securities.user
-    val stdBuilder = OqlBuilder.from(classOf[Student], "student")
-    stdBuilder.where("student.user.code =:code ", user)
-    val students = entityDao.search(stdBuilder)
-
-    val session = entityDao.get(classOf[LaSession], longId("session"))
-    val volunteer = this.getVolunteer(students(0), session)
-    val takers = getTakers(students(0), getProject, session)
-    takers.size match {
-      case 1 => {
-        val taker = takers.head
-        entityDao.remove(takers)
-        taker.option.actual = taker.option.takers.size
-        entityDao.saveOrUpdate(taker.option)
-      }
-      case 2 => {
-        val taker = takers.head
-        if (takers(0) == volunteer) {
-          takers(1).rank = 1
-        } else {
-          takers(0).rank = 1
-        }
-        entityDao.remove(volunteer)
-        taker.option.actual = taker.option.takers.size
-        entityDao.saveOrUpdate(taker.option)
-      }
-    }
-    redirect("index")
-  }
-
-  protected def changeNo(): View = {
-    val user = Securities.user
-    val stdBuilder = OqlBuilder.from(classOf[Student], "student")
-    stdBuilder.where("student.user.code =:code ", user)
-    val students = entityDao.search(stdBuilder)
-
+  protected def cancel(): View = {
+    val student = getStudent
     val session = entityDao.find(classOf[LaSession], longId("session")).get
-    val takers = getTakers(students(0), getProject, session)
-    takers.size match {
-      case 2 => {
-        if (takers(0).rank == 1) {
-          takers(0).rank = 2
-          takers(1).rank = 1
-        } else {
-          takers(0).rank = 1
-          takers(1).rank = 2
-        }
-        saveOrUpdate(takers)
-      }
-      case _ =>
+    val volunteer = getVolunteer(student, session)
+    if (volunteer.enrolledOption.isEmpty) {
+      val takers = getTakers(student, getProject, session)
+      entityDao.remove(takers)
+      entityDao.remove(volunteer)
+      redirect("index", "取消成功")
+    } else {
+      redirect("index", "已经确定面试，暂不能取消")
     }
-    redirect("index")
   }
 
 }

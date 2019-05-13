@@ -18,7 +18,7 @@
  */
 package org.openurp.edu.la.model
 
-import org.beangle.data.orm.{ IdGenerator, MappingModule }
+import org.beangle.data.orm.{IdGenerator, MappingModule}
 
 class DefaultMapping extends MappingModule {
 
@@ -29,7 +29,8 @@ class DefaultMapping extends MappingModule {
     bind[Corporation]
 
     bind[LaOption].on(e => declare(
-      e.takers is one2many("option")))
+      e.takers is one2many("option"),
+      e.volunteers is one2many("enrolledOption")))
 
     bind[LaSession]
 

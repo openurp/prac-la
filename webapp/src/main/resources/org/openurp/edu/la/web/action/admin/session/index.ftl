@@ -1,6 +1,6 @@
 [#ftl]
 [@b.head/]
-[@b.toolbar title="选择批次"/]
+[@b.toolbar title="法律助理报名批次"/]
 <table class="indexpanel">
   <tr>
     <td class="index_view" >

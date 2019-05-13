@@ -20,16 +20,15 @@ package org.openurp.edu.la.web.action.admin
 
 import java.time.LocalDate
 
-import org.beangle.commons.collection.Order
+import org.beangle.commons.bean.orderings.MultiPropertyOrdering
+import org.beangle.commons.collection.{Collections, Order}
 import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.edu.base.model.Project
 import org.openurp.edu.base.model.Semester
-import org.openurp.edu.la.model.Corporation
-import org.openurp.edu.la.model.LaOption
 import org.openurp.edu.boot.web.ProjectSupport
+import org.openurp.edu.la.model.{Corporation, LaOption}
 
 class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
@@ -48,8 +47,54 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
         .where("not exists(from " + classOf[LaOption].getName +
           " lo where lo.corporation=co and lo.semester=:semester)", semester)
     coQuery.orderBy("co.name")
-    put("corporations", entityDao.search(coQuery))
+    var corporations = entityDao.search(coQuery)
+
+    if (null != entity.corporation && !corporations.contains(entity.corporation)) {
+      val c = corporations.toBuffer
+      c += entity.corporation
+      put("corporations", c)
+    } else {
+      put("corporations", corporations)
+    }
     super.editSetting(entity)
+  }
+
+  def report(): View = {
+    val options = entityDao.find(classOf[LaOption], longIds("option"))
+    put("options", options)
+    forward()
+  }
+
+  def autoEnroll(): View = {
+    val semester = entityDao.get(classOf[Semester], intId("option.semester"))
+    val builder = OqlBuilder.from(classOf[LaOption], "option")
+    builder.where("option.project=:project", getProject)
+    builder.where("option.semester=:semester", semester)
+    builder.where("size(option.volunteers) < option.capacity")
+    val options = entityDao.search(builder)
+
+    //自动录取第一志愿
+    options foreach (enrollRank(_, 1))
+    options foreach (enrollRank(_, 2))
+    redirect("search", "info.save.success")
+  }
+
+  private def enrollRank(option: LaOption, rank: Int): Unit = {
+    val remained = option.capacity - option.volunteers.size
+    if (remained > 0) {
+      val volunteerStds = option.volunteers.map(_.std).toSet
+      val takers = option.takers.filter(x => !volunteerStds.contains(x.volunteer.std) && x.volunteer.enrolledOption.isEmpty && x.rank == rank)
+      takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
+      val enrolled = takers.take(remained)
+      enrolled foreach { taker =>
+        taker.enrolled = true
+        taker.volunteer.enrolledOption = Some(taker.option)
+        taker.volunteer.enrolledRank = Some(taker.rank)
+      }
+      val volunteers = enrolled.map(_.volunteer)
+      option.volunteers ++= volunteers
+      entityDao.saveOrUpdate(volunteers)
+    }
   }
 
   def getCurSemester(): Semester = {
@@ -60,17 +105,19 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   }
 
   override protected def getQueryBuilder(): OqlBuilder[LaOption] = {
-    val status = get("status")
     val builder = OqlBuilder.from(classOf[LaOption], "option")
-    status.foreach(
-      a => a match {
-        case "0" => {
-          builder.where("option.actual<option.capacity")
-        }
-        case "1" => {
-          builder.where("option.actual=option.capacity")
-        }
-        case "2" =>
+    get("signup_status").foreach(a =>
+      a match {
+        case "0" => builder.where("size(option.takers)<option.capacity")
+        case "1" => builder.where("size(option.takers)>=option.capacity")
+        case _   =>
+      })
+
+    get("enroll_status").foreach(a =>
+      a match {
+        case "0" => builder.where("size(option.volunteers)<option.capacity")
+        case "1" => builder.where("size(option.volunteers)>=option.capacity")
+        case _   =>
       })
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
@@ -95,15 +142,23 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     option.project = getProject
     val corporationId = longId("laOption.corporation")
     val corporation = entityDao.get(classOf[Corporation], corporationId)
-    option.actual = option.takers.size
     super.saveAndRedirect(option)
+  }
+
+  def takers(): View = {
+    val optionId = longId("laOption")
+    val option = entityDao.get(classOf[LaOption], optionId)
+    val takers = Collections.newBuffer(option.takers)
+    takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
+    put("option", option)
+    put("takers", takers)
+    forward()
   }
 
   def volunteers(): View = {
     val optionId = longId("laOption")
     val option = entityDao.get(classOf[LaOption], optionId)
     put("option", option)
-    put("takers", option.takers)
     forward()
   }
 
