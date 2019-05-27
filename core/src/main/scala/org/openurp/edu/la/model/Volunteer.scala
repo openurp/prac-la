@@ -59,4 +59,8 @@ class Volunteer extends LongId with Updated {
   def getTaker(rank: Number): Option[LaTaker] = {
     takers.find(_.rank == rank.intValue)
   }
+
+  def rank: Int = {
+    enrolledRank.getOrElse(0)
+  }
 }

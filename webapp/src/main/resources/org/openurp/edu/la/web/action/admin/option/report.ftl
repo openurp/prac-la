@@ -21,7 +21,7 @@
      <th width="7%">二志愿</th>
   </tr>
  </thead>
- [#list option.volunteers?sort_by(["std","user","code"]) as volunteer]
+ [#list option.orderedVolunteers as volunteer]
   <tr>
     <td style="border-width: 0 1px 1px 1px;">${volunteer_index+1}</td>
     <td>${volunteer.std.user.name}</td>

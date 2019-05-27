@@ -28,6 +28,9 @@ import org.openurp.edu.base.model.Project
 import org.openurp.edu.base.model.Semester
 import java.time.LocalDate
 import org.openurp.edu.la.model.LaTaker
+import org.beangle.webmvc.api.view.View
+import org.beangle.security.Securities
+import java.time.Instant
 
 class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
 
@@ -44,4 +47,38 @@ class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
     semesters(0)
   }
 
+  override def saveAndRedirect(taker: LaTaker): View = {
+    val taker = entityDao.get(classOf[LaTaker], longId("laTaker"))
+    val volunteer = taker.volunteer
+
+    getBoolean("enrolled") foreach { enrolled =>
+      enrolled match {
+        case true =>
+          if (volunteer.enrolledOption.orNull != taker.option) {
+            volunteer.enrolledOption = Some(taker.option)
+            volunteer.enrolledRank = Some(taker.rank)
+            volunteer.takers foreach { t =>
+              if (t.id != taker.id) {
+                if (t.enrolled) {
+                  t.remark = Some(Securities.user + " 人工取消录取  " + Instant.now.toString)
+                }
+                t.enrolled = false
+              }
+            }
+            taker.remark = Some(Securities.user + " 人工录取 " + Instant.now.toString)
+            taker.enrolled = true
+            entityDao.saveOrUpdate(volunteer)
+          }
+        case false =>
+          taker.enrolled = false
+          if (volunteer.enrolledOption.orNull == taker.option) {
+            volunteer.enrolledOption = None
+            volunteer.enrolledRank = None
+            taker.remark = Some(Securities.user + " 人工取消录取 " + Instant.now.toString)
+          }
+          entityDao.saveOrUpdate(volunteer)
+      }
+    }
+    super.saveAndRedirect(taker)
+  }
 }

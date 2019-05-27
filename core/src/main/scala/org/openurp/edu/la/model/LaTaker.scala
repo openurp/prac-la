@@ -21,8 +21,9 @@ package org.openurp.edu.la.model
 import org.beangle.data.model.LongId
 import org.beangle.data.model.pojo.Updated
 import java.time.Instant
+import org.beangle.data.model.pojo.Remark
 
-class LaTaker extends LongId with Updated {
+class LaTaker extends LongId with Updated with Remark {
 
   def this(volunteer: Volunteer, rank: Int, option: LaOption) {
     this()

@@ -9,6 +9,10 @@
     <td class="content">${laOption.corporation.name}</td>
   </tr>
   <tr>
+    <td class="title" width="20%">批次</td>
+    <td class="content">${laOption.semester.schoolYear}学年度${laOption.semester.name}学期 ${laOption.session.name}</td>
+  </tr>
+  <tr>
     <td class="title" width="20%">要求</td>
     <td class="content" >${laOption.requirement!}</td>
   </tr>
@@ -22,7 +26,7 @@
   </tr>
   <tr>
     <td class="title" width="20%">报名实际人数</td>
-    <td class="content" >${laOption.actual}</td>
+    <td class="content" >${laOption.takers?size}</td>
   </tr>
   <tr>
     <td class="title" width="20%">录取人数上限</td>
@@ -30,7 +34,7 @@
   </tr>
   <tr>
     <td class="title" width="20%">录取实际人数</td>
-    <td class="content" >${laOption.enrolled}</td>
+    <td class="content" >${laOption.volunteers?size}</td>
   </tr>
 </table>
 

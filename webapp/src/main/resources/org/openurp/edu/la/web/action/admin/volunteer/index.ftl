@@ -15,6 +15,11 @@
       [@b.textfield name="laTaker.volunteer.std.user.code" label="学号"/]
       [@b.textfield name="laTaker.volunteer.std.user.name" label="姓名"/]
       [@b.textfield name="laTaker.option.corporation.name" label="单位名称"/]
+      [@b.select label="是否录取" name="laTaker.enrolled"]
+        <option value="">...</option>
+        <option value="0">未录取</option>
+        <option value="1">已录取</option>
+      [/@]
       <input type="hidden" name="orderBy" value="laTaker.volunteer.std.user.code"/>
     [/@]
     </td>

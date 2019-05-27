@@ -20,17 +20,27 @@ package org.openurp.edu.la.model
 
 import scala.collection.mutable.Buffer
 
+import org.beangle.commons.bean.orderings.MultiPropertyOrdering
 import org.beangle.commons.collection.Collections
 import org.beangle.data.model.LongId
-import org.openurp.edu.base.model.{Project, Semester}
 import org.beangle.data.model.pojo.Remark
+import org.openurp.edu.base.model.{Project, Semester}
 
 /** 参见法律援助的企业及其要求
   */
 class LaOption extends LongId with Remark {
   var project: Project = _
+
+  /**学年学期*/
   var semester: Semester = _
+
+  /**报名批次*/
+  var session: LaSession = _
+
+  /**报名单位*/
   var corporation: Corporation = _
+
+  /**要求*/
   var requirement: Option[String] = None
 
   /**拟录取人数*/
@@ -41,7 +51,12 @@ class LaOption extends LongId with Remark {
 
   /**报名列表*/
   var takers: Buffer[LaTaker] = Collections.newBuffer[LaTaker]
-  
+
   /**实际面试名单*/
   var volunteers: Buffer[Volunteer] = Collections.newBuffer[Volunteer]
+
+  def orderedVolunteers: Buffer[Volunteer] = {
+    val a = Collections.newBuffer(volunteers)
+    a.sorted(new MultiPropertyOrdering("rank,gpa desc,updatedAt"))
+  }
 }

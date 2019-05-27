@@ -6,9 +6,9 @@
   [@b.field label="绩点"]${volunteer.gpa!}[/@]
   [@b.field label="联系方式"]${volunteer.mobile}[/@]
   [@b.field label="第一志愿"]
-   ${(volunteer.getTaker(1).option.corporation.name)!} 
+   ${(volunteer.getTaker(1).option.corporation.name)!}
      [#if ((volunteer.getTaker(1).option.id)!0)=((volunteer.enrolledOption.id)!-1)] <span class="glyphicon glyphicon-ok">👍🎉</span>[/#if]
-     
+
   [/@]
   [@b.field label="第二志愿"]${(volunteer.getTaker(2).option.corporation.name)!"---"}
    [#if ((volunteer.getTaker(2).option.id)!0)=((volunteer.enrolledOption.id)!-1)] <span class="glyphicon glyphicon-ok"></span>[/#if]

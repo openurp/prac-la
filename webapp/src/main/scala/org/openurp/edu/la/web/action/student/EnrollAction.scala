@@ -89,7 +89,7 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
 
     val optionBuilder = OqlBuilder.from(classOf[LaOption], "option")
     optionBuilder.where("option.project=:project", project)
-    optionBuilder.where("option.semester=:semester", getCurSemester())
+    optionBuilder.where("option.session=:session", session)
     optionBuilder.where("size(option.volunteers) < option.capacity")
 
     put("options", entityDao.search(optionBuilder))
@@ -119,8 +119,7 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     val takerBuilder = OqlBuilder.from(classOf[LaTaker], "taker")
     takerBuilder.where("taker.volunteer.std=:std", std)
     takerBuilder.where("taker.option.project=:project", project)
-    takerBuilder.where("taker.option.semester=:semester", getCurSemester())
-    takerBuilder.where("taker.updatedAt>:beginAt and taker.updatedAt<:endAt", session.beginAt, session.endAt)
+    takerBuilder.where("taker.option.session=:session", session)
     entityDao.search(takerBuilder)
   }
 

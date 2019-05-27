@@ -29,12 +29,15 @@ import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.edu.base.model.Semester
 import org.openurp.edu.boot.web.ProjectSupport
 import org.openurp.edu.la.model.{Corporation, LaOption}
+import org.openurp.edu.la.model.LaSession
+import org.beangle.webmvc.api.annotation.ignore
 
 class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
     put("semesters", entityDao.getAll(classOf[Semester]))
     put("currentSemester", getCurSemester())
+    put("sessions", entityDao.getAll(classOf[LaSession]))
     super.indexSetting()
   }
 
@@ -42,11 +45,13 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     put("semesters", entityDao.getAll(classOf[Semester]))
     val semester = getCurSemester()
     put("currentSemester", semester)
-    val coQuery =
-      OqlBuilder.from(classOf[Corporation], "co")
-        .where("not exists(from " + classOf[LaOption].getName +
-          " lo where lo.corporation=co and lo.semester=:semester)", semester)
-    coQuery.orderBy("co.name")
+    put("sessions", entityDao.getAll(classOf[LaSession]))
+    val coQuery = OqlBuilder.from(classOf[Corporation], "co")
+    getLong("option.session.id") foreach { sessionId =>
+      coQuery.where("not exists(from " + classOf[LaOption].getName +
+        " lo where lo.corporation=co and lo.session.id=:sessionId)", sessionId)
+      coQuery.orderBy("co.name")
+    }
     var corporations = entityDao.search(coQuery)
 
     if (null != entity.corporation && !corporations.contains(entity.corporation)) {
@@ -67,9 +72,11 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   def autoEnroll(): View = {
     val semester = entityDao.get(classOf[Semester], intId("option.semester"))
+    val session = entityDao.get(classOf[LaSession], longId("option.session"))
     val builder = OqlBuilder.from(classOf[LaOption], "option")
     builder.where("option.project=:project", getProject)
     builder.where("option.semester=:semester", semester)
+    builder.where("option.session=:session", session)
     builder.where("size(option.volunteers) < option.capacity")
     val options = entityDao.search(builder)
 
@@ -83,8 +90,8 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     val remained = option.capacity - option.volunteers.size
     if (remained > 0) {
       val volunteerStds = option.volunteers.map(_.std).toSet
-      val takers = option.takers.filter(x => !volunteerStds.contains(x.volunteer.std) && x.volunteer.enrolledOption.isEmpty && x.rank == rank)
-      takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
+      var takers = option.takers.filter(x => !volunteerStds.contains(x.volunteer.std) && x.volunteer.enrolledOption.isEmpty && x.rank == rank)
+      takers = takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
       val enrolled = takers.take(remained)
       enrolled foreach { taker =>
         taker.enrolled = true
@@ -102,6 +109,13 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     builder.where("semester.beginOn <= :date and semester.endOn >= :date", LocalDate.now())
     val semesters = entityDao.search(builder)
     semesters(0)
+  }
+
+  @ignore
+  protected override def removeAndRedirect(entities: Seq[LaOption]): View = {
+    println("remove entities :" + entities.size)
+    remove(entities)
+    redirect("search", "info.remove.success")
   }
 
   override protected def getQueryBuilder(): OqlBuilder[LaOption] = {
@@ -148,8 +162,8 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   def takers(): View = {
     val optionId = longId("laOption")
     val option = entityDao.get(classOf[LaOption], optionId)
-    val takers = Collections.newBuffer(option.takers)
-    takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
+    var takers = Collections.newBuffer(option.takers)
+    takers = takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
     put("option", option)
     put("takers", takers)
     forward()

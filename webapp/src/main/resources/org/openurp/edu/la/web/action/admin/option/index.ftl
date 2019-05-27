@@ -1,6 +1,7 @@
 [#ftl]
 [@b.head/]
 [@b.toolbar title="参选单位"/]
+[#assign sessionList=sessions?sort_by("beginAt")?reverse/]
 <table class="indexpanel">
   <tr>
     <td class="index_view" >
@@ -11,6 +12,7 @@
           <option value="${semester.id}" [#if semester.id = currentSemester.id]selected[/#if]>${(semester.schoolYear)!}学年${(semester.name?replace('0','第'))!}学期</option>
         [/#list]
       [/@]
+      [@b.select label="批次" name="option.session.id" items=sessionList/]
       [@b.textfields names="option.corporation.name;名称"/]
       [@b.select label="报名状态" name="signup_status" items={}]
         <option value="2">...</option>
@@ -26,7 +28,7 @@
       <input type="hidden" name="orderBy" value="corporation.name desc"/>
     [/@]
     </td>
-    <td class="index_content">[@b.div id="laOptionlist" href="!search?orderBy=corporation.name desc&option.semester.id=" +currentSemester.id/]
+    <td class="index_content">[@b.div id="laOptionlist" href="!search?orderBy=corporation.name desc&option.session.id=" +sessionList?first.id/]
     </td>
   </tr>
 </table>
