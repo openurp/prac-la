@@ -71,11 +71,10 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   }
 
   def autoEnroll(): View = {
-    val semester = entityDao.get(classOf[Semester], intId("option.semester"))
     val session = entityDao.get(classOf[LaSession], longId("option.session"))
     val builder = OqlBuilder.from(classOf[LaOption], "option")
     builder.where("option.project=:project", getProject)
-    builder.where("option.semester=:semester", semester)
+    builder.where("option.semester=:semester", session.semester)
     builder.where("option.session=:session", session)
     builder.where("size(option.volunteers) < option.capacity")
     val options = entityDao.search(builder)
@@ -93,6 +92,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
       var takers = option.takers.filter(x => !volunteerStds.contains(x.volunteer.std) && x.volunteer.enrolledOption.isEmpty && x.rank == rank)
       takers = takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
       val enrolled = takers.take(remained)
+      //println(s"takers size ${takers.size} and enroll $remained for ${option.corporation.name},enroll actual ${enrolled.size}");
       enrolled foreach { taker =>
         taker.enrolled = true
         taker.volunteer.enrolledOption = Some(taker.option)

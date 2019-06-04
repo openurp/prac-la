@@ -31,12 +31,14 @@ import org.openurp.edu.la.model.LaTaker
 import org.beangle.webmvc.api.view.View
 import org.beangle.security.Securities
 import java.time.Instant
+import org.openurp.edu.la.model.LaSession
 
 class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
     put("semesters", entityDao.getAll(classOf[Semester]))
     put("currentSemester", getCurSemester())
+    put("sessions", entityDao.getAll(classOf[LaSession]))
     super.indexSetting()
   }
 

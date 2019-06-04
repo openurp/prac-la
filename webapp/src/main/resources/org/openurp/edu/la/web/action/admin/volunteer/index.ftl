@@ -11,6 +11,7 @@
           <option value="${semester.id}" [#if semester.id = currentSemester.id]selected[/#if]>${(semester.schoolYear)!}学年${(semester.name?replace('0','第'))!}学期</option>
         [/#list]
       [/@]
+      [@b.select label="批次" name="laTaker.option.session.id" items=sessions empty="..."/]
       [@b.textfield name="laTaker.rank" label="志愿"/]
       [@b.textfield name="laTaker.volunteer.std.user.code" label="学号"/]
       [@b.textfield name="laTaker.volunteer.std.user.name" label="姓名"/]

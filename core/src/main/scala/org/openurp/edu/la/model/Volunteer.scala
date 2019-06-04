@@ -18,12 +18,14 @@
  */
 package org.openurp.edu.la.model
 
+import scala.collection.mutable.Buffer
+
+import org.beangle.commons.collection.Collections
 import org.beangle.data.model.LongId
 import org.beangle.data.model.pojo.Updated
-import org.openurp.edu.base.model.Student
-import org.openurp.edu.base.model.Semester
-import org.beangle.commons.collection.Collections
-import scala.collection.mutable.Buffer
+import org.openurp.edu.base.model.{ Semester, Student }
+
+
 
 /** 志愿者
   *
@@ -40,6 +42,9 @@ class Volunteer extends LongId with Updated {
 
   /**学年学期*/
   var semester: Semester = _
+
+  /**批次*/
+  var session: LaSession = _
 
   /**录取志愿*/
   var enrolledRank: Option[Int] = None

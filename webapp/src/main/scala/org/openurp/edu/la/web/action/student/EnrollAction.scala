@@ -100,16 +100,17 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
   }
 
   private def getVolunteer(std: Student, session: LaSession): Volunteer = {
-    val volunteer = populateEntity(classOf[Volunteer], "volunteer")
-    if (null == volunteer.std) {
+    val builder = OqlBuilder.from(classOf[Volunteer], "volunteer")
+    builder.where("volunteer.std=:std", std)
+    builder.where("volunteer.session=:session", session)
+
+    val volunteers = entityDao.search(builder)
+    var volunteer: Volunteer = null
+    if (volunteers.isEmpty) {
+      volunteer = new Volunteer();
       volunteer.std = std
       volunteer.semester = session.semester
-    } else {
-      if (volunteer.std != std) {
-        throw new RuntimeException("Cannot recognize volunteer id:" + volunteer.id + " for user " + std.user.code)
-      }
-    }
-    if (null == volunteer.updatedAt) {
+      volunteer.session = session
       volunteer.updatedAt = Instant.now
     }
     volunteer
