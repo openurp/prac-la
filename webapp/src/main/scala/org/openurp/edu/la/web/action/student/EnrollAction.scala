@@ -112,6 +112,8 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
       volunteer.semester = session.semester
       volunteer.session = session
       volunteer.updatedAt = Instant.now
+    } else {
+      volunteer = volunteers.head
     }
     volunteer
   }
@@ -129,6 +131,9 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     val session = entityDao.find(classOf[LaSession], longId("session")).get
     val volunteer = getVolunteer(student, session)
     volunteer.updatedAt = Instant.now
+    volunteer.mobile = get("volunteer.mobile").get
+    volunteer.gpa = getFloat("volunteer.gpa").get
+
     val project = getProject
     val saved = Collections.newBuffer[Entity[_]]
     saved += volunteer
