@@ -1,6 +1,6 @@
 [#ftl]
 [@b.head/]
-[@b.toolbar title="${option.corporation.name }的报名名单"]bar.addBack();[/@]
+[@b.toolbar title="${laOption.corporation.name }的报名名单"]bar.addBack();[/@]
 [@b.grid items=takers var="taker"]
   [@b.row]
       [@b.col property="rank" title="志愿" width="5%"/]

@@ -41,25 +41,26 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
         case _ => entityDao.get(classOf[Semester], semesterId.get)
       }
     }
-    put("project",getProject)
+    put("project", getProject)
     put("currentSemester", semester)
     put("sessions", entityDao.findBy(classOf[LaSession], "semester", List(semester)))
     super.indexSetting()
   }
 
   override protected def editSetting(entity: LaOption): Unit = {
-    val semester = entityDao.get(classOf[Semester],intId("option.semester"))
+    val semester = entityDao.get(classOf[Semester], intId("laOption.semester"))
     put("semester", semester)
-    put("sessions",entityDao.findBy(classOf[LaSession], "semester", List(semester)))
+    val sessions = entityDao.findBy(classOf[LaSession], "semester", List(semester))
+    put("sessions", sessions)
     val coQuery = OqlBuilder.from(classOf[LaCorporation], "co")
-    getLong("option.session.id") foreach { sessionId =>
+    getLong("laOption.session.id") foreach { sessionId =>
       coQuery.where("not exists(from " + classOf[LaOption].getName +
         " lo where lo.corporation=co and lo.session.id=:sessionId)", sessionId)
       coQuery.orderBy("co.name")
     }
     val corporations = entityDao.search(coQuery)
 
-    if (null != entity.corporation && !corporations.contains(entity.corporation)) {
+    if (null != entity.corporation  && entity.corporation.persisted && !corporations.contains(entity.corporation)) {
       val c = corporations.toBuffer
       c += entity.corporation
       put("corporations", c)
@@ -70,18 +71,18 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   }
 
   def report(): View = {
-    val options = entityDao.find(classOf[LaOption], longIds("option"))
+    val options = entityDao.find(classOf[LaOption], longIds("laOption"))
     put("options", options)
     forward()
   }
 
   def autoEnroll(): View = {
-    val session = entityDao.get(classOf[LaSession], longId("option.session"))
-    val builder = OqlBuilder.from(classOf[LaOption], "option")
-    builder.where("option.project=:project", getProject)
-    builder.where("option.semester=:semester", session.semester)
-    builder.where("option.session=:session", session)
-    builder.where("size(option.volunteers) < option.capacity")
+    val session = entityDao.get(classOf[LaSession], longId("laOption.session"))
+    val builder = OqlBuilder.from(classOf[LaOption], "laOption")
+    builder.where("laOption.project=:project", getProject)
+    builder.where("laOption.semester=:semester", session.semester)
+    builder.where("laOption.session=:session", session)
+    builder.where("size(laOption.volunteers) < laOption.capacity")
     val options = entityDao.search(builder)
 
     //自动录取第一志愿
@@ -124,18 +125,18 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   }
 
   override protected def getQueryBuilder(): OqlBuilder[LaOption] = {
-    val builder = OqlBuilder.from(classOf[LaOption], "option")
+    val builder = OqlBuilder.from(classOf[LaOption], "laOption")
     get("signup_status").foreach(a =>
       a match {
-        case "0" => builder.where("size(option.takers)<option.capacity")
-        case "1" => builder.where("size(option.takers)>=option.capacity")
+        case "0" => builder.where("size(laOption.takers)<option.capacity")
+        case "1" => builder.where("size(laOption.takers)>=option.capacity")
         case _ =>
       })
 
     get("enroll_status").foreach(a =>
       a match {
-        case "0" => builder.where("size(option.volunteers)<option.capacity")
-        case "1" => builder.where("size(option.volunteers)>=option.capacity")
+        case "0" => builder.where("size(laOption.volunteers)<option.capacity")
+        case "1" => builder.where("size(laOption.volunteers)>=option.capacity")
         case _ =>
       })
     populateConditions(builder)
@@ -159,8 +160,6 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   override protected def saveAndRedirect(option: LaOption): View = {
     option.project = getProject
-    val corporationId = longId("laOption.corporation")
-    val corporation = entityDao.get(classOf[LaCorporation], corporationId)
     super.saveAndRedirect(option)
   }
 
@@ -169,7 +168,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     val option = entityDao.get(classOf[LaOption], optionId)
     var takers = Collections.newBuffer(option.takers)
     takers = takers.sorted(new MultiPropertyOrdering("rank,volunteer.gpa desc,updatedAt"))
-    put("option", option)
+    put("laOption", option)
     put("takers", takers)
     forward()
   }
@@ -177,7 +176,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   def volunteers(): View = {
     val optionId = longId("laOption")
     val option = entityDao.get(classOf[LaOption], optionId)
-    put("option", option)
+    put("laOption", option)
     forward()
   }
 

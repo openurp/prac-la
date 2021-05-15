@@ -1,6 +1,6 @@
 [#ftl]
 [@b.head/]
-[@b.toolbar title="${option.corporation.name }的面试名单"]bar.addBack();[/@]
+[@b.toolbar title="${laOption.corporation.name }的面试名单"]bar.addBack();[/@]
 [@b.grid items=option.orderedVolunteers var="volunteer"]
   [@b.row]
       [@b.col property="enrolledRank" title="志愿" width="5%"/]

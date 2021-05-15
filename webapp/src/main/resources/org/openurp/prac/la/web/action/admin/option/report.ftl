@@ -1,8 +1,8 @@
 [#ftl]
 [@b.head/]
 [@b.toolbar title="单位面试表"/]
-[#list options as option]
-<h3 style="text-align:center">华东政法大学&nbsp;&nbsp;${option.semester.schoolYear}学年<br>${option.corporation.name}&nbsp;&nbsp;法律助理面试名单</h3>
+[#list options as laOption]
+<h3 style="text-align:center">华东政法大学&nbsp;&nbsp;${option.semester.schoolYear}学年<br>${laOption.corporation.name}&nbsp;&nbsp;法律助理面试名单</h3>
 <div style="border:0.5px solid #006CB2;">
 <table class="gridtable">
  <thead class="gridhead">
