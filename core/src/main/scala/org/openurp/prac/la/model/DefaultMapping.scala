@@ -26,7 +26,7 @@ class DefaultMapping extends MappingModule {
     defaultIdGenerator(classOf[Long],IdGenerator.AutoIncrement)
     defaultCache("openurp.la", "read-write")
 
-    bind[Corporation]
+    bind[LaCorporation]
 
     bind[LaOption] declare{ e=>
       e.takers is one2many("option")
@@ -35,7 +35,7 @@ class DefaultMapping extends MappingModule {
 
     bind[LaSession]
 
-    bind[Volunteer]  declare { e =>
+    bind[LaVolunteer]  declare { e =>
       e.takers is depends("volunteer")
     }
 

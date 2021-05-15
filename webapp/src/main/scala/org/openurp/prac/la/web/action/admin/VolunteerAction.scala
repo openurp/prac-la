@@ -31,9 +31,16 @@ import java.time.{Instant, LocalDate}
 class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
-    put("semesters", entityDao.getAll(classOf[Semester]))
-    put("currentSemester", getCurSemester())
-    put("sessions", entityDao.getAll(classOf[LaSession]))
+    val semesterId = getInt("semester.id")
+    val semester = {
+      semesterId match {
+        case None => getCurrentSemester
+        case _ => entityDao.get(classOf[Semester], semesterId.get)
+      }
+    }
+    put("project",getProject)
+    put("currentSemester", semester)
+    put("sessions", entityDao.findBy(classOf[LaSession], "semester", List(semester)))
     super.indexSetting()
   }
 

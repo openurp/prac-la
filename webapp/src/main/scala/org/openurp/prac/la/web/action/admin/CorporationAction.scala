@@ -19,8 +19,11 @@
 package org.openurp.prac.la.web.action.admin
 
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.prac.la.model.Corporation
+import org.openurp.prac.la.model.LaCorporation
 
-class CorporationAction extends RestfulAction[Corporation] {
+class CorporationAction extends RestfulAction[LaCorporation] {
 
+  override protected def simpleEntityName: String = {
+    "corporation"
+  }
 }

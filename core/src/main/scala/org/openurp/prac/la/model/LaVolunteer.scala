@@ -20,43 +20,52 @@ package org.openurp.prac.la.model
 
 import scala.collection.mutable.Buffer
 
-import org.beangle.commons.bean.orderings.MultiPropertyOrdering
 import org.beangle.commons.collection.Collections
 import org.beangle.data.model.LongId
-import org.beangle.data.model.pojo.Remark
-import org.openurp.base.edu.model.{Project, Semester}
+import org.beangle.data.model.pojo.Updated
+import org.openurp.base.edu.model.{ Semester, Student }
 
-/** 参见法律援助的企业及其要求
+
+
+/** 志愿者
+  *
+  *  记录学生每个轮次的报名数据
   */
-class LaOption extends LongId with Remark {
-  var project: Project = _
+class LaVolunteer extends LongId with Updated {
+
+  def this(std: Student) {
+    this()
+    this.std = std
+  }
+  /**学生*/
+  var std: Student = _
 
   /**学年学期*/
   var semester: Semester = _
 
-  /**报名批次*/
+  /**批次*/
   var session: LaSession = _
 
-  /**报名单位*/
-  var corporation: Corporation = _
+  /**录取志愿*/
+  var enrolledRank: Option[Int] = None
 
-  /**要求*/
-  var requirement: Option[String] = None
+  /**手机*/
+  var mobile: String = _
 
-  /**拟录取人数*/
-  var enrollLimit: Int = _
+  /**录取单位*/
+  var enrolledOption: Option[LaOption] = None
 
-  /**面试人数上限*/
-  var capacity: Int = _
-
-  /**报名列表*/
+  /**报名记录*/
   var takers: Buffer[LaTaker] = Collections.newBuffer[LaTaker]
 
-  /**实际面试名单*/
-  var volunteers: Buffer[Volunteer] = Collections.newBuffer[Volunteer]
+  /**绩点*/
+  var gpa: Float = _
 
-  def orderedVolunteers: Buffer[Volunteer] = {
-    val a = Collections.newBuffer(volunteers)
-    a.sorted(new MultiPropertyOrdering("rank,gpa desc,updatedAt"))
+  def getTaker(rank: Number): Option[LaTaker] = {
+    takers.find(_.rank == rank.intValue)
+  }
+
+  def rank: Int = {
+    enrolledRank.getOrElse(0)
   }
 }

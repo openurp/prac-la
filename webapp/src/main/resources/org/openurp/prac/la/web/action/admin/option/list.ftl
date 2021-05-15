@@ -5,7 +5,9 @@
     bar.addItem("${b.text("action.new")}",action.add());
     bar.addItem("${b.text("action.modify")}",action.edit());
     bar.addItem("${b.text("action.delete")}",action.remove("确认删除?"));
+    [#if Parameters['option.session.id']??]
     bar.addItem("自动录取",action.method('autoEnroll',"确定自动录取?"));
+    [/#if]
     bar.addItem("面试表",action.multi('report',null,null,"_blank"),"action-print");
   [/@]
   [@b.row]

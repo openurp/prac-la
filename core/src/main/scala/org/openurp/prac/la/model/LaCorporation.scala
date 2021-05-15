@@ -21,5 +21,5 @@ package org.openurp.prac.la.model
 import org.beangle.data.model.LongId
 import org.beangle.data.model.pojo.Named
 
-class Corporation extends LongId with Named {
+class LaCorporation extends LongId with Named {
 }

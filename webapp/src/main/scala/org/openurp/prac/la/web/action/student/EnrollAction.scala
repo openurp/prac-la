@@ -27,7 +27,7 @@ import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.edu.model.{Project, Semester, Student}
 import org.openurp.boot.edu.helper.ProjectSupport
-import org.openurp.prac.la.model.{LaOption, LaSession, LaTaker, Volunteer}
+import org.openurp.prac.la.model.{LaOption, LaSession, LaTaker, LaVolunteer}
 
 import java.time.{Instant, LocalDate}
 import javax.sql.DataSource
@@ -45,7 +45,7 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
 
     val student = entityDao.search(stdBuilder).head
 
-    val volunteerBuilder = OqlBuilder.from(classOf[Volunteer], "volunteer")
+    val volunteerBuilder = OqlBuilder.from(classOf[LaVolunteer], "volunteer")
     volunteerBuilder.where("volunteer.std=:std", student)
     volunteerBuilder.where("volunteer.semester=:semester", getCurSemester())
     val volunteers = entityDao.search(volunteerBuilder)
@@ -98,15 +98,15 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     forward()
   }
 
-  private def getVolunteer(std: Student, session: LaSession): Volunteer = {
-    val builder = OqlBuilder.from(classOf[Volunteer], "volunteer")
+  private def getVolunteer(std: Student, session: LaSession): LaVolunteer = {
+    val builder = OqlBuilder.from(classOf[LaVolunteer], "volunteer")
     builder.where("volunteer.std=:std", std)
     builder.where("volunteer.session=:session", session)
 
     val volunteers = entityDao.search(builder)
-    var volunteer: Volunteer = null
+    var volunteer: LaVolunteer = null
     if (volunteers.isEmpty) {
-      volunteer = new Volunteer();
+      volunteer = new LaVolunteer();
       volunteer.std = std
       volunteer.semester = session.semester
       volunteer.session = session

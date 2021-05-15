@@ -19,6 +19,7 @@
 [/@]
 
   [#if options?? && options?size>0]
+    <div style="border:0.5px solid #006CB2;">
     [@b.grid items=options var="option" sortable="false"]
       [@b.row]
         [@b.col width="8%" title="序号"]${option_index+1 }[/@]
@@ -29,5 +30,6 @@
         [@b.col width="8%" title="报名人数"]${option.takers?size}[/@]
       [/@]
     [/@]
+   </div>
   [#else]目前没有可报名单位[/#if]
 [@b.foot/]

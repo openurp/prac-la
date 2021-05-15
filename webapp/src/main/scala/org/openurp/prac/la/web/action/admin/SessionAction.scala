@@ -29,14 +29,22 @@ import org.openurp.prac.la.model.LaSession
 class SessionAction extends RestfulAction[LaSession] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
-    put("semesters", entityDao.getAll(classOf[Semester]))
-    put("currentSemester", getCurSemester())
+    val semesterId = getInt("semester.id")
+    val semester = {
+      semesterId match {
+        case None => getCurrentSemester
+        case _ => entityDao.get(classOf[Semester], semesterId.get)
+      }
+    }
+    put("project",getProject)
+    put("currentSemester", semester)
     super.indexSetting()
   }
 
   override protected def editSetting(entity: LaSession): Unit = {
-    put("semesters", entityDao.getAll(classOf[Semester]))
-    put("currentSemester", getCurSemester())
+    put("project",getProject)
+    val semester = entityDao.get(classOf[Semester],intId("laSession.semester"))
+    put("semester",semester)
     super.editSetting(entity)
   }
 

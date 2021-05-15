@@ -18,40 +18,46 @@
  */
 package org.openurp.prac.la.web.action.admin
 
-import java.time.LocalDate
 import org.beangle.commons.bean.orderings.MultiPropertyOrdering
 import org.beangle.commons.collection.{Collections, Order}
 import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
+import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.edu.model.Semester
-import org.openurp.prac.la.model.{Corporation, LaOption}
-import org.openurp.prac.la.model.LaSession
-import org.beangle.webmvc.api.annotation.ignore
 import org.openurp.boot.edu.helper.ProjectSupport
+import org.openurp.prac.la.model.{LaCorporation, LaOption, LaSession}
+
+import java.time.LocalDate
 
 class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   override protected def indexSetting(): Unit = {
-    put("semesters", entityDao.getAll(classOf[Semester]))
-    put("currentSemester", getCurSemester())
-    put("sessions", entityDao.getAll(classOf[LaSession]))
+    val semesterId = getInt("semester.id")
+    val semester = {
+      semesterId match {
+        case None => getCurrentSemester
+        case _ => entityDao.get(classOf[Semester], semesterId.get)
+      }
+    }
+    put("project",getProject)
+    put("currentSemester", semester)
+    put("sessions", entityDao.findBy(classOf[LaSession], "semester", List(semester)))
     super.indexSetting()
   }
 
   override protected def editSetting(entity: LaOption): Unit = {
-    put("semesters", entityDao.getAll(classOf[Semester]))
-    val semester = getCurSemester()
-    put("currentSemester", semester)
-    put("sessions", entityDao.getAll(classOf[LaSession]))
-    val coQuery = OqlBuilder.from(classOf[Corporation], "co")
+    val semester = entityDao.get(classOf[Semester],intId("option.semester"))
+    put("semester", semester)
+    put("sessions",entityDao.findBy(classOf[LaSession], "semester", List(semester)))
+    val coQuery = OqlBuilder.from(classOf[LaCorporation], "co")
     getLong("option.session.id") foreach { sessionId =>
       coQuery.where("not exists(from " + classOf[LaOption].getName +
         " lo where lo.corporation=co and lo.session.id=:sessionId)", sessionId)
       coQuery.orderBy("co.name")
     }
-    var corporations = entityDao.search(coQuery)
+    val corporations = entityDao.search(coQuery)
 
     if (null != entity.corporation && !corporations.contains(entity.corporation)) {
       val c = corporations.toBuffer
@@ -123,14 +129,14 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
       a match {
         case "0" => builder.where("size(option.takers)<option.capacity")
         case "1" => builder.where("size(option.takers)>=option.capacity")
-        case _   =>
+        case _ =>
       })
 
     get("enroll_status").foreach(a =>
       a match {
         case "0" => builder.where("size(option.volunteers)<option.capacity")
         case "1" => builder.where("size(option.volunteers)>=option.capacity")
-        case _   =>
+        case _ =>
       })
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
@@ -138,7 +144,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 
   def corporation(): View = {
     val name = get("term").orNull
-    val query = OqlBuilder.from(classOf[Corporation], "corporation")
+    val query = OqlBuilder.from(classOf[LaCorporation], "corporation")
     populateConditions(query)
 
     if (Strings.isNotEmpty(name)) {
@@ -154,7 +160,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   override protected def saveAndRedirect(option: LaOption): View = {
     option.project = getProject
     val corporationId = longId("laOption.corporation")
-    val corporation = entityDao.get(classOf[Corporation], corporationId)
+    val corporation = entityDao.get(classOf[LaCorporation], corporationId)
     super.saveAndRedirect(option)
   }
 
