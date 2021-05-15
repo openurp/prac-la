@@ -16,21 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.web.action.admin
+package org.openurp.prac.la.web.action.admin
 
 import java.time.LocalDate
-
 import org.beangle.commons.bean.orderings.MultiPropertyOrdering
 import org.beangle.commons.collection.{Collections, Order}
 import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.edu.base.model.Semester
-import org.openurp.edu.boot.web.ProjectSupport
-import org.openurp.edu.la.model.{Corporation, LaOption}
-import org.openurp.edu.la.model.LaSession
+import org.openurp.base.edu.model.Semester
+import org.openurp.prac.la.model.{Corporation, LaOption}
+import org.openurp.prac.la.model.LaSession
 import org.beangle.webmvc.api.annotation.ignore
+import org.openurp.boot.edu.helper.ProjectSupport
 
 class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
 

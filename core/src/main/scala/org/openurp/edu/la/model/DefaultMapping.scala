@@ -16,26 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.model
+package org.openurp.prac.la.model
 
 import org.beangle.data.orm.{IdGenerator, MappingModule}
 
 class DefaultMapping extends MappingModule {
 
   def binding(): Unit = {
-    defaultIdGenerator(IdGenerator.AutoIncrement)
+    defaultIdGenerator(classOf[Long],IdGenerator.AutoIncrement)
     defaultCache("openurp.la", "read-write")
 
     bind[Corporation]
 
-    bind[LaOption].on(e => declare(
-      e.takers is one2many("option"),
-      e.volunteers is one2many("enrolledOption")))
+    bind[LaOption] declare{ e=>
+      e.takers is one2many("option")
+      e.volunteers is one2many("enrolledOption")
+    }
 
     bind[LaSession]
 
-    bind[Volunteer].on(e => declare(
-      e.takers is depends("volunteer")))
+    bind[Volunteer]  declare { e =>
+      e.takers is depends("volunteer")
+    }
 
     bind[LaTaker]
 

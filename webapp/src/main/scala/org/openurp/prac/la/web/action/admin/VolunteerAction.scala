@@ -16,22 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.web.action.admin
+package org.openurp.prac.la.web.action.admin
 
-import org.beangle.webmvc.api.action.ActionSupport
-import org.beangle.webmvc.entity.action.EntityAction
-import org.openurp.edu.boot.web.ProjectSupport
-import org.openurp.edu.la.model.Volunteer
-import org.beangle.webmvc.entity.action.RestfulAction
 import org.beangle.data.dao.OqlBuilder
-import org.openurp.edu.base.model.Project
-import org.openurp.edu.base.model.Semester
-import java.time.LocalDate
-import org.openurp.edu.la.model.LaTaker
-import org.beangle.webmvc.api.view.View
 import org.beangle.security.Securities
-import java.time.Instant
-import org.openurp.edu.la.model.LaSession
+import org.beangle.webmvc.api.view.View
+import org.beangle.webmvc.entity.action.RestfulAction
+import org.openurp.base.edu.model.Semester
+import org.openurp.boot.edu.helper.ProjectSupport
+import org.openurp.prac.la.model.{LaSession, LaTaker}
+
+import java.time.{Instant, LocalDate}
 
 class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
 

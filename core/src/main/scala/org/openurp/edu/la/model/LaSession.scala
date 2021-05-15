@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.model
+package org.openurp.prac.la.model
 
 import org.beangle.data.model.LongId
 import org.beangle.data.model.pojo.{InstantRange, Named}
-import org.openurp.edu.base.model.Project
-import org.openurp.edu.base.model.Semester
+import org.openurp.base.edu.model.Project
+import org.openurp.base.edu.model.Semester
 
 /** 开放进行选择的批次
   * 一般一个学期可以开放多次

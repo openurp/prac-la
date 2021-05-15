@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.model
+package org.openurp.prac.la.model
 
 import scala.collection.mutable.Buffer
 
 import org.beangle.commons.collection.Collections
 import org.beangle.data.model.LongId
 import org.beangle.data.model.pojo.Updated
-import org.openurp.edu.base.model.{ Semester, Student }
+import org.openurp.base.edu.model.{ Semester, Student }
 
 
 

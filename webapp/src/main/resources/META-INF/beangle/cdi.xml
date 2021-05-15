@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <cdi>
   <container name="web">
-    <module class="org.openurp.edu.la.web.DefaultModule"/>
-    <module class="org.openurp.edu.boot.web.ProjectModule" />
+    <module class="org.openurp.prac.la.web.DefaultModule"/>
+    <module class="org.openurp.boot.edu.web.action.ProjectModule" />
   </container>
 </cdi>

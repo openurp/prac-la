@@ -16,22 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.web.action.student
+package org.openurp.prac.la.web.action.student
 
-import java.time.{Instant, LocalDate}
-
+import org.beangle.commons.collection.Collections
 import org.beangle.data.dao.OqlBuilder
+import org.beangle.data.jdbc.query.JdbcExecutor
+import org.beangle.data.model.Entity
 import org.beangle.security.Securities
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.edu.base.model.{Semester, Student}
-import org.openurp.edu.boot.web.ProjectSupport
-import org.openurp.edu.la.model.{LaOption, LaSession, LaTaker, Volunteer}
-import org.openurp.edu.base.model.Project
-import org.beangle.data.model.Entity
-import org.beangle.commons.collection.Collections
+import org.openurp.base.edu.model.{Project, Semester, Student}
+import org.openurp.boot.edu.helper.ProjectSupport
+import org.openurp.prac.la.model.{LaOption, LaSession, LaTaker, Volunteer}
+
+import java.time.{Instant, LocalDate}
 import javax.sql.DataSource
-import org.beangle.data.jdbc.query.JdbcExecutor
 
 class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
 
@@ -182,6 +181,12 @@ class EnrollAction extends RestfulAction[LaTaker] with ProjectSupport {
     } else {
       redirect("index", "已经确定面试，暂不能取消")
     }
+  }
+
+  private def getStudent: Student = {
+    val query = OqlBuilder.from(classOf[Student], "s")
+    query.where("s.user.code=:code", Securities.user)
+    entityDao.search(query).head
   }
 
 }

@@ -16,11 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.web.action.admin
+package org.openurp.prac.la.web
 
-import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.edu.la.model.Corporation
+import org.beangle.cdi.bind.BindModule
+import org.beangle.ems.app.datasource.AppDataSourceFactory
+import org.openurp.prac.la.web.action.student.EnrollAction
+import org.openurp.prac.la.web.action.admin.VolunteerAction
+import org.openurp.prac.la.web.action.admin.SessionAction
+import org.openurp.prac.la.web.action.admin.OptionAction
+import org.openurp.prac.la.web.action.admin.CorporationAction
 
-class CorporationAction extends RestfulAction[Corporation] {
+class DefaultModule extends BindModule {
 
+  protected override def binding() {
+    bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[VolunteerAction])
+    bind(classOf[EnrollAction])
+
+    bind("eamsDataSource",classOf[AppDataSourceFactory]).property("name", "eams")
+  }
 }

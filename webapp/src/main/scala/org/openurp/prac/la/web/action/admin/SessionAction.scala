@@ -16,16 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openurp.edu.la.web.action.admin
+package org.openurp.prac.la.web.action.admin
 
 import java.time.LocalDate
-
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.edu.base.model.Semester
-import org.openurp.edu.boot.web.ProjectSupport
-import org.openurp.edu.la.model.LaSession
+import org.openurp.base.edu.model.Semester
+import org.openurp.boot.edu.helper.ProjectSupport
+import org.openurp.prac.la.model.LaSession
 
 class SessionAction extends RestfulAction[LaSession] with ProjectSupport {
 
