@@ -26,8 +26,8 @@ import org.beangle.security.Securities
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.edu.model.{Project, Semester, Student}
-import org.openurp.boot.edu.helper.ProjectSupport
 import org.openurp.prac.la.model.{LaOption, LaSession, LaTaker, LaVolunteer}
+import org.openurp.starter.edu.helper.ProjectSupport
 
 import java.time.{Instant, LocalDate}
 import javax.sql.DataSource

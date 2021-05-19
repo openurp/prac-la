@@ -23,8 +23,8 @@ import org.beangle.security.Securities
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.edu.model.Semester
-import org.openurp.boot.edu.helper.ProjectSupport
 import org.openurp.prac.la.model.{LaSession, LaTaker}
+import org.openurp.starter.edu.helper.ProjectSupport
 
 import java.time.{Instant, LocalDate}
 
@@ -38,7 +38,7 @@ class VolunteerAction extends RestfulAction[LaTaker] with ProjectSupport {
         case _ => entityDao.get(classOf[Semester], semesterId.get)
       }
     }
-    put("project",getProject)
+    put("project", getProject)
     put("currentSemester", semester)
     put("sessions", entityDao.findBy(classOf[LaSession], "semester", List(semester)))
     super.indexSetting()

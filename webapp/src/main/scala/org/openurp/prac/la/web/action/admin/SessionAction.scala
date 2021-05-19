@@ -18,13 +18,14 @@
  */
 package org.openurp.prac.la.web.action.admin
 
-import java.time.LocalDate
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.edu.model.Semester
-import org.openurp.boot.edu.helper.ProjectSupport
 import org.openurp.prac.la.model.LaSession
+import org.openurp.starter.edu.helper.ProjectSupport
+
+import java.time.LocalDate
 
 class SessionAction extends RestfulAction[LaSession] with ProjectSupport {
 
@@ -36,15 +37,15 @@ class SessionAction extends RestfulAction[LaSession] with ProjectSupport {
         case _ => entityDao.get(classOf[Semester], semesterId.get)
       }
     }
-    put("project",getProject)
+    put("project", getProject)
     put("currentSemester", semester)
     super.indexSetting()
   }
 
   override protected def editSetting(entity: LaSession): Unit = {
-    put("project",getProject)
-    val semester = entityDao.get(classOf[Semester],intId("laSession.semester"))
-    put("semester",semester)
+    put("project", getProject)
+    val semester = entityDao.get(classOf[Semester], intId("laSession.semester"))
+    put("semester", semester)
     super.editSetting(entity)
   }
 

@@ -26,8 +26,8 @@ import org.beangle.webmvc.api.annotation.ignore
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
 import org.openurp.base.edu.model.Semester
-import org.openurp.boot.edu.helper.ProjectSupport
 import org.openurp.prac.la.model.{LaCorporation, LaOption, LaSession}
+import org.openurp.starter.edu.helper.ProjectSupport
 
 import java.time.LocalDate
 
@@ -60,7 +60,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     }
     val corporations = entityDao.search(coQuery)
 
-    if (null != entity.corporation  && entity.corporation.persisted && !corporations.contains(entity.corporation)) {
+    if (null != entity.corporation && entity.corporation.persisted && !corporations.contains(entity.corporation)) {
       val c = corporations.toBuffer
       c += entity.corporation
       put("corporations", c)

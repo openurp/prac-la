@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.openurp</groupId>
     <artifactId>openurp-parent</artifactId>
-    <version>0.4.10</version>
+    <version>0.4.12</version>
   </parent>
   <groupId>org.openurp.prac.la</groupId>
   <artifactId>openurp-prac-la-parent</artifactId>
@@ -18,8 +18,8 @@
   </modules>
 
   <properties>
-    <openurp.api.version>0.22.1</openurp.api.version>
-    <openurp.boot.version>0.0.5</openurp.boot.version>
+    <openurp.api.version>0.22.2</openurp.api.version>
+    <openurp.starter.version>0.0.6</openurp.starter.version>
     <openurp.base.version>0.1.17</openurp.base.version>
   </properties>
 
