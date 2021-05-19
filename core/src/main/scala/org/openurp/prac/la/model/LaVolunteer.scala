@@ -25,8 +25,6 @@ import org.beangle.data.model.LongId
 import org.beangle.data.model.pojo.Updated
 import org.openurp.base.edu.model.{ Semester, Student }
 
-
-
 /** 志愿者
   *
   *  记录学生每个轮次的报名数据
