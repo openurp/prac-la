@@ -20,11 +20,11 @@
         <option value="0">未满</option>
       [/@]
       [@b.textfields names="laOption.requirement;要求"/]
-      <input type="hidden" name="orderBy" value="corporation.name desc"/>
+      <input type="hidden" name="orderBy" value="laOption.corporation.name desc"/>
     [/@]
      </div>
      <div class="search-list">
-       [@b.div id="laOptionlist" href="!search?orderBy=corporation.name desc&laOption.semester.id="+currentSemester.id/]
+       [@b.div id="laOptionlist" href="!search?orderBy=laOption.corporation.name desc&laOption.semester.id="+currentSemester.id/]
      </div>
     </div>
 [@b.foot/]
