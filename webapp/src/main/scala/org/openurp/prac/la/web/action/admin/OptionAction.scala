@@ -21,12 +21,14 @@ package org.openurp.prac.la.web.action.admin
 import org.beangle.commons.bean.orderings.MultiPropertyOrdering
 import org.beangle.commons.collection.{Collections, Order}
 import org.beangle.commons.lang.Strings
+import org.beangle.commons.web.util.RequestUtils
 import org.beangle.data.dao.OqlBuilder
-import org.beangle.webmvc.api.annotation.ignore
+import org.beangle.data.transfer.exporter.ExportSetting
+import org.beangle.webmvc.api.annotation.{ignore, mapping}
 import org.beangle.webmvc.api.view.View
 import org.beangle.webmvc.entity.action.RestfulAction
-import org.openurp.base.edu.model.Semester
-import org.openurp.prac.la.model.{LaCorporation, LaOption, LaSession}
+import org.openurp.base.edu.model.{Semester, StudentState}
+import org.openurp.prac.la.model.{LaCorporation, LaOption, LaSession, LaTaker, LaVolunteer}
 import org.openurp.starter.edu.helper.ProjectSupport
 
 import java.time.LocalDate
@@ -180,4 +182,24 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     forward()
   }
 
+  @ignore
+  override def configExport(setting: ExportSetting): Unit = {
+    val optionId = longId("laOption")
+    val option = entityDao.get(classOf[LaOption], optionId)
+    setting.context.put("option", option)
+    setting.context.put("volunteers", option.volunteers)
+    setting.context.put("remark", option.remark.getOrElse(""))
+    setting.context.put("requirement", option.requirement.getOrElse(""))
+    val states = new java.util.HashMap[Long, StudentState]
+    val indexes = new java.util.HashMap[Long, Int]
+    var i = 1
+    option.volunteers foreach { v =>
+      states.put(v.std.id, v.std.state.get)
+      indexes.put(v.std.id, i)
+      i += 1
+    }
+    setting.context.put("states", states)
+    setting.context.put("indexes", indexes)
+    RequestUtils.setContentDisposition(response, option.semester.schoolYear + "年度" + option.corporation.name + "面试名单.xls")
+  }
 }

@@ -16,7 +16,7 @@
       [@b.col property="volunteer.std.state.department.name" title="院系" width="17%"/]
       [@b.col property="volunteer.std.state.major.name" title="专业" width="15%"]${(laTaker.volunteer.std.state.major.name)!}[/@]
       [@b.col property="option.corporation.name" title="单位" width="20%"]
-      <span [#if laTaker.option.id=(laTaker.volunteer.enrolledOption.id)!0]class="glyphicon glyphicon-ok"[/#if] title="录取单位">${laTaker.option.corporation.name}</span>
+      [#if laTaker.option.id=(laTaker.volunteer.enrolledOption.id)!0]<i class="fa fa-check" aria-hidden="true"></i>[/#if]${laTaker.option.corporation.name}
       [/@]
       [@b.col property="volunteer.gpa"  title="平均绩点" width="6%"/]
       [@b.col property="updatedAt" title="报名时间" width="10%"]

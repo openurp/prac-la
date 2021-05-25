@@ -9,6 +9,7 @@
     bar.addItem("自动录取",action.method('autoEnroll',"确定自动录取?"));
     [/#if]
     bar.addItem("面试表",action.multi('report',null,null,"_blank"),"action-print");
+    bar.addItem("下载面试表",action.single("export",null,"template=org/openurp/prac/la/web/action/admin/option/review.xls","_blank"))
   [/@]
   [@b.row]
     [@b.boxcol/]
