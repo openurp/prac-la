@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <orm>
-  <mapping class="org.openurp.edu.la.model.DefaultMapping" />
+  <mapping class="org.openurp.prac.la.model.DefaultMapping" />
   <naming>
-    <profile package = "org.openurp.edu.la" pluralize="true" schema="edu_la"/>
+    <profile package = "org.openurp.prac.la" pluralize="true" schema="prac"/>
   </naming>
 </orm>
