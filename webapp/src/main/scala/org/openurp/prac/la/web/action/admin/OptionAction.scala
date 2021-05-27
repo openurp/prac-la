@@ -126,21 +126,19 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     redirect("search", "info.remove.success")
   }
 
-  override protected def getQueryBuilder(): OqlBuilder[LaOption] = {
+  override protected def getQueryBuilder: OqlBuilder[LaOption] = {
     val builder = OqlBuilder.from(classOf[LaOption], "laOption")
-    get("signup_status").foreach(a =>
-      a match {
-        case "0" => builder.where("size(laOption.takers)<option.capacity")
-        case "1" => builder.where("size(laOption.takers)>=option.capacity")
-        case _ =>
-      })
+    get("signup_status").foreach {
+      case "0" => builder.where("size(laOption.takers)<option.capacity")
+      case "1" => builder.where("size(laOption.takers)>=option.capacity")
+      case _ =>
+    }
 
-    get("enroll_status").foreach(a =>
-      a match {
-        case "0" => builder.where("size(laOption.volunteers)<option.capacity")
-        case "1" => builder.where("size(laOption.volunteers)>=option.capacity")
-        case _ =>
-      })
+    get("enroll_status").foreach {
+      case "0" => builder.where("size(laOption.volunteers)<option.capacity")
+      case "1" => builder.where("size(laOption.volunteers)>=option.capacity")
+      case _ =>
+    }
     populateConditions(builder)
     builder.orderBy(get(Order.OrderStr).orNull).limit(getPageLimit)
   }
@@ -151,7 +149,7 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
     populateConditions(query)
 
     if (Strings.isNotEmpty(name)) {
-      query.where("corporation.name like :name ", '%' + name + '%')
+      query.where("corporation.name like :name ", s"%${name}%")
     }
     val pageLimit = getPageLimit
     query.limit(pageLimit);

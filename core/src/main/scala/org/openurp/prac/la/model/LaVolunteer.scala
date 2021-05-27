@@ -31,7 +31,7 @@ import org.openurp.base.edu.model.{ Semester, Student }
   */
 class LaVolunteer extends LongId with Updated {
 
-  def this(std: Student) {
+  def this(std: Student) = {
     this()
     this.std = std
   }
