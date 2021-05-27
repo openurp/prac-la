@@ -186,14 +186,15 @@ class OptionAction extends RestfulAction[LaOption] with ProjectSupport {
   override def configExport(setting: ExportSetting): Unit = {
     val optionId = longId("laOption")
     val option = entityDao.get(classOf[LaOption], optionId)
+    val volunteers = option.orderedVolunteers
     setting.context.put("option", option)
-    setting.context.put("volunteers", option.volunteers)
+    setting.context.put("volunteers", volunteers)
     setting.context.put("remark", option.remark.getOrElse(""))
     setting.context.put("requirement", option.requirement.getOrElse(""))
     val states = new java.util.HashMap[Long, StudentState]
     val indexes = new java.util.HashMap[Long, Int]
     var i = 1
-    option.volunteers foreach { v =>
+    volunteers foreach { v =>
       states.put(v.std.id, v.std.state.get)
       indexes.put(v.std.id, i)
       i += 1
