@@ -21,16 +21,13 @@ package org.openurp.prac.la.web
 import org.beangle.cdi.bind.BindModule
 import org.beangle.ems.app.datasource.AppDataSourceFactory
 import org.openurp.prac.la.web.action.student.EnrollAction
-import org.openurp.prac.la.web.action.admin.VolunteerAction
-import org.openurp.prac.la.web.action.admin.SessionAction
-import org.openurp.prac.la.web.action.admin.OptionAction
-import org.openurp.prac.la.web.action.admin.CorporationAction
+import org.openurp.prac.la.web.action.admin.{CorporationAction, OptionAction, SessionAction, TakerAction, VolunteerAction}
 
 class DefaultModule extends BindModule {
 
   protected override def binding() {
-    bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[VolunteerAction])
-    bind(classOf[EnrollAction])
+    bind(classOf[CorporationAction],classOf[OptionAction],classOf[SessionAction],classOf[TakerAction])
+    bind(classOf[EnrollAction],classOf[VolunteerAction])
 
     bind("eamsDataSource",classOf[AppDataSourceFactory]).property("name", "eams")
   }

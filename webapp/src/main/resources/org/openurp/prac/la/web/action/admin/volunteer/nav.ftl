@@ -1,0 +1,5 @@
+[#ftl]
+  [@b.nav class="nav-tabs nav-tabs-compact"]
+    [@b.navitem href="volunteer"]报名信息[/@]
+    [@b.navitem href="taker"]志愿明细[/@]
+  [/@]
