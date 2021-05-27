@@ -25,7 +25,7 @@ import org.beangle.data.model.pojo.Remark
 
 class LaTaker extends LongId with Updated with Remark {
 
-  def this(volunteer: LaVolunteer, rank: Int, option: LaOption) {
+  def this(volunteer: LaVolunteer, rank: Int, option: LaOption) = {
     this()
     this.volunteer = volunteer
     this.rank = rank
