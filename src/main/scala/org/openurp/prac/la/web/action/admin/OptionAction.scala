@@ -181,7 +181,6 @@ class OptionAction extends RestfulAction[LaOption], ProjectSupport, ExportSuppor
     val blob = EmsApp.getBlobRepository(true)
     Workers.work(option.takers, (t: LaTaker) => {
       t.volunteer.attachmentPath foreach { path =>
-        println(path)
         val std = t.volunteer.std
         val stdName = StdNamePurifier.purify(std.name)
         blob.url(path) foreach { url =>
