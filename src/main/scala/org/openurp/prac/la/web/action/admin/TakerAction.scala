@@ -19,7 +19,7 @@ package org.openurp.prac.la.web.action.admin
 
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.security.Securities
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.view.View
 import org.beangle.webmvc.support.action.RestfulAction
 import org.openurp.base.model.{Project, Semester}
 import org.openurp.prac.la.model.{LaSession, LaTaker}

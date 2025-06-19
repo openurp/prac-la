@@ -17,8 +17,7 @@
 
 package org.openurp.prac.la.web
 
-import org.beangle.cdi.bind.BindModule
-import org.beangle.ems.app.datasource.AppDataSourceFactory
+import org.beangle.commons.cdi.BindModule
 import org.openurp.prac.la.web.action.admin._
 import org.openurp.prac.la.web.action.student.EnrollAction
 

@@ -24,9 +24,9 @@ ThisBuild / description := "The OpenURP Practice Lawyer Assisstant"
 ThisBuild / homepage := Some(url("http://openurp.github.io/prac-la/index.html"))
 ThisBuild / resolvers += Resolver.mavenLocal
 
-val apiVer = "0.39.2"
-val starterVer = "0.3.32"
-val baseVer = "0.4.24"
+val apiVer = "0.44.0"
+val starterVer = "0.3.58"
+val baseVer = "0.4.51"
 val openurp_base_api = "org.openurp.base" % "openurp-base-api" % apiVer
 val openurp_degree_api = "org.openurp.degree" % "openurp-degree-api" % apiVer
 val openurp_stater_web = "org.openurp.starter" % "openurp-starter-web" % starterVer

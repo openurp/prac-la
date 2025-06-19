@@ -24,9 +24,9 @@ import org.beangle.commons.lang.Strings
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.data.model.Entity
 import org.beangle.ems.app.EmsApp
-import org.beangle.ems.app.datasource.AppDataSourceFactory
+import org.beangle.ems.app.dao.AppDataSourceFactory
 import org.beangle.jdbc.query.JdbcExecutor
-import org.beangle.web.action.view.View
+import org.beangle.webmvc.view.View
 import org.openurp.base.model.Project
 import org.openurp.base.std.model.Student
 import org.openurp.prac.la.model.{LaOption, LaSession, LaTaker, LaVolunteer}
@@ -37,16 +37,9 @@ import javax.sql.DataSource
 
 /** 报名
  */
-class EnrollAction extends StudentSupport, Initializing {
+class EnrollAction extends StudentSupport {
 
-  var eamsDataSource: DataSource = _
-
-  override def init(): Unit = {
-    val ds = new AppDataSourceFactory()
-    ds.name = "eams"
-    ds.init()
-    eamsDataSource = ds.result
-  }
+  var dataSource: DataSource = _
 
   protected override def projectIndex(student: Student): View = {
     given project: Project = student.project
@@ -72,7 +65,7 @@ class EnrollAction extends StudentSupport, Initializing {
     val project = getProject
     val volunteer = getVolunteer(student, session)
 
-    val gpa: Option[Number] = new JdbcExecutor(eamsDataSource)
+    val gpa: Option[Number] = new JdbcExecutor(dataSource)
       .unique("select gpa from edu.std_gpas where std_id=?", student.id)
 
     volunteer.gpa = gpa.map(_.floatValue).getOrElse(0)

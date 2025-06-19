@@ -27,13 +27,14 @@ import org.beangle.commons.net.http.HttpUtils
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.doc.transfer.exporter.ExportContext
 import org.beangle.ems.app.EmsApp
-import org.beangle.web.action.annotation.ignore
-import org.beangle.web.action.view.{Status, Stream, View}
+import org.beangle.webmvc.annotation.ignore
+import org.beangle.webmvc.view.{Status, Stream, View}
 import org.beangle.webmvc.support.action.{ExportSupport, RestfulAction}
 import org.openurp.base.model.{Project, Semester}
 import org.openurp.base.std.model.StudentState
 import org.openurp.prac.la.model.*
 import org.openurp.starter.web.support.ProjectSupport
+import org.beangle.commons.activation.MediaTypes
 
 import java.io.File
 
@@ -196,7 +197,7 @@ class OptionAction extends RestfulAction[LaOption], ProjectSupport, ExportSuppor
     } else {
       val zipFile = new File(dir.getAbsolutePath + Files./ + s"${option.corporation.name}.zip")
       Zipper.zip(dir, innerFiles, zipFile, "utf-8")
-      Stream(zipFile, "application/zip", s"${option.corporation.name}报名材料.zip").cleanup { () =>
+      Stream(zipFile, MediaTypes.ApplicationZip, s"${option.corporation.name}报名材料.zip").cleanup { () =>
         Files.travel(dir, f => f.delete())
         dir.delete()
       }

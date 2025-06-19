@@ -19,8 +19,8 @@ package org.openurp.prac.la.web.action.admin
 
 import org.beangle.data.dao.OqlBuilder
 import org.beangle.ems.app.EmsApp
-import org.beangle.web.action.context.ActionContext
-import org.beangle.web.action.view.{Status, View}
+import org.beangle.webmvc.context.ActionContext
+import org.beangle.webmvc.view.{Status, View}
 import org.beangle.webmvc.support.action.RestfulAction
 import org.openurp.base.model.{Project, Semester}
 import org.openurp.prac.la.model.{LaSession, LaVolunteer}
