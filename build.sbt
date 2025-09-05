@@ -2,7 +2,7 @@ import org.openurp.parent.Dependencies.*
 import org.openurp.parent.Settings.*
 
 ThisBuild / organization := "org.openurp.prac.la"
-ThisBuild / version := "0.0.5-SNAPSHOT"
+ThisBuild / version := "0.0.5"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -24,9 +24,9 @@ ThisBuild / description := "The OpenURP Practice Lawyer Assisstant"
 ThisBuild / homepage := Some(url("http://openurp.github.io/prac-la/index.html"))
 ThisBuild / resolvers += Resolver.mavenLocal
 
-val apiVer = "0.44.0"
-val starterVer = "0.3.58"
-val baseVer = "0.4.51"
+val apiVer = "0.46.0"
+val starterVer = "0.4.0"
+val baseVer = "0.4.55"
 val openurp_base_api = "org.openurp.base" % "openurp-base-api" % apiVer
 val openurp_degree_api = "org.openurp.degree" % "openurp-degree-api" % apiVer
 val openurp_stater_web = "org.openurp.starter" % "openurp-starter-web" % starterVer
