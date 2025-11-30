@@ -23,7 +23,7 @@ class DefaultMapping extends MappingModule {
 
   def binding(): Unit = {
     defaultIdGenerator(classOf[Long],IdGenerator.AutoIncrement)
-    defaultCache("openurp.la", "read-write")
+    defaultCache("openurp-prac-la", "read-write")
 
     bind[LaCorporation]
 
